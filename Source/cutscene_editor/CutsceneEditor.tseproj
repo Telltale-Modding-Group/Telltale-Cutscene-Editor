@@ -1,0 +1,13 @@
+{
+  "formatVersion": "1",
+  "tool": {
+    "game": "TTDS",
+    "legacyBuild": true
+  },
+  "mod": {
+    "name": "Cutscene Editor",
+    "version": "1.0",
+    "author": "Mawrak",
+    "priority": 30
+  }
+}

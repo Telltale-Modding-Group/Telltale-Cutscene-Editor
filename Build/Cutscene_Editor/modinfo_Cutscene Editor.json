@@ -1,0 +1,14 @@
+{
+  "ModDisplayName": "Cutscene Editor",
+  "ModVersion": "1.0",
+  "ModAuthor": "Mawrak",
+  "ModCompatibility": "The_Walking_Dead_Definitive_Edition",
+  "ModFiles": [
+    "Cutscene_Editor_CutsceneEditor.ttarch2",
+    "Demo_Assets_CutsceneEditor.ttarch2",
+    "Demo_Scene_CutsceneEditor.ttarch2",
+    "_resdesc_50_Cutscene_Editor_CutsceneEditor.lua",
+    "_resdesc_50_Demo_Assets_CutsceneEditor.lua",
+    "_resdesc_50_Demo_Scene_CutsceneEditor.lua"
+  ]
+}
