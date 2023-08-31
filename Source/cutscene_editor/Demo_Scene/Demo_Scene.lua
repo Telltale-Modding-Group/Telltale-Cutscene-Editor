@@ -192,8 +192,8 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    --CutscenePlayer("demo_cutscene", 0);
-    CutscenePlayer("demo_cutscene", 29);
+    CutscenePlayer("demo_cutscene", 0);
+    --CutscenePlayer("demo_cutscene", 29);
 
 --;b,o,u,t,p,n,j
 
@@ -271,6 +271,31 @@ gabe_animation_clip_32 = function()
     mari_animation_clip_32_controller = PlayAnimation("Mariana", "sk62_clementineStandA_lookAround_add");
     ControllerSetLooping(mari_animation_clip_32_controller , false);
     
+end
+
+
+mari_animation_clip_41 = function()
+    clip_41_done = 0;
+    clip_41_time = GetTotalTime() + 3.1;
+
+    mari_animation_clip_41_controller_2 = PlayAnimation("Mariana", "sk62_clementineStandA_enragedGestureB_add");
+    ControllerSetLooping(mari_animation_clip_41_controller_2 , false);
+
+    Callback_OnPostUpdate:Add(mari_animation_clip_41_update);   
+    
+end
+
+mari_animation_clip_41_update = function()
+    if clip_41_done == 0 then
+        if GetTotalTime() > clip_41_time then
+            mari_animation_clip_41_controller_3 = PlayAnimation("Mariana", "sk62_clementineStandA_fingerJabFwdR_add");
+            ControllerSetLooping(mari_animation_clip_41_controller_3 , false);
+            mari_animation_clip_41_controller = PlayAnimation("Mariana", "a371251351");
+            ControllerSetLooping(mari_animation_clip_41_controller , false); 
+            local controller_sound = SoundPlay("a371251351");
+            clip_41_done = 1;
+        end
+    end
 end
 --open the scene with this script
 SceneOpen(kScene, kScript);
