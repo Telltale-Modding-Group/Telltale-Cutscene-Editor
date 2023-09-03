@@ -892,8 +892,9 @@ move_object = function()
         highlightedText = highlightedText .. "World Rot: " .. VectorToString(Vector(r_x, r_y, r_z)) .. "\n"; --VectorToString(currentAgent_rotation_vector); 
         highlightedText = highlightedText .. "Current anm: " .. tostring(AnmTextTitle) .. "\n";
         highlightedText = highlightedText .. "Playing: " .. tostring(animation_menu) .. "\n";
-        highlightedText = highlightedText .. "Mode: " .. tostring(modeText) .. "\n" .. "Animation Length: " .. tostring(AnimationLength) .. "\n" .. "Voiceline Length: " .. tostring(VoiceLength) .. "\n";
-        highlightedText = highlightedText .. "Voice line: " .. tostring(voice_line);
+        highlightedText = highlightedText .. "Mode: " .. tostring(modeText) .. "\n" .. "Animation Length: " .. tostring(AnimationLength) .. "\n";
+        highlightedText = highlightedText .. "Voice line: " .. tostring(voice_line) .. "\n";
+        highlightedText = highlightedText .. "Voiceline lipsync Length: " .. tostring(VoiceLength) .. "\n"
         TextSet(Custom_CutsceneDev_CutsceneToolsHighlightText, highlightedText);
         AgentSetWorldPos(Custom_CutsceneDev_CutsceneToolsHighlightText, Vector(x_x, y_y, z_z));
     end
@@ -1022,8 +1023,8 @@ move_object = function()
         ResetAnimation();
   
         
-        local voice_line_anm = tostring(voice_line) .. ".anm";
-        local voice_line_snd = tostring(voice_line) .. ".wav";
+        local voice_line_anm = tostring(voice_line);-- .. ".anm";
+        local voice_line_snd = tostring(voice_line);-- .. ".wav";
         local controller_sound = SoundPlay(voice_line_snd);
         local voiceController = PlayAnimation(currentAgent_name, voice_line_anm);--tostring(voice_line_anm));
         ControllerSetContribution(voiceController, 1);

@@ -55,9 +55,12 @@ require("CutscenePlayer.lua");
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 
 --main level variables
-local kScript = "DemoScene"; --dont touch (the name of this script and also the name of the level function at the bottom of the script, which will be called as soon as this scene opens)
-local kScene = "adv_richmondStreet"; --dont touch (the name of the scene asset file)
-local agent_name_scene = "adv_richmondStreet.scene"; --dont touch (this is the name of the scene agent object, using it to set post processing effects later)
+local kScript = "DemoScene"; --(the name of this script and also the name of the level function at the bottom of the script, which will be called as soon as this scene opens)
+local kScene = "adv_richmondStreet"; --(the name of the scene asset file)
+local agent_name_scene = "adv_richmondStreet.scene"; --(this is the name of the scene agent object, using it to set post processing effects later)
+
+
+
 
 --cutscene development variables variables (these are variables required by the development scripts)
 Custom_CutsceneDev_SceneObject = kScene; --dont touch (the development scripts need to reference the main level)
@@ -160,7 +163,10 @@ DemoScene = function()
     --IMPORTANT - Name agents with their Telltale names, if you give them an entirely custom names they might break
     agent_mari = AgentCreate("Mariana", "sk62_mariana.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     
-   
+    agent_anf_1 = AgentCreate("RaiderMale", "sk61_genericMarauder.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_anf_2 = AgentCreate("Villager", "sk61_genericVillager.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_anf_3 = AgentCreate("RaiderFemale2", "sk62_genericMarauder.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+
 
     Custom_SetAgentWorldPosition("Tripp", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Kate", Vector(0, -1000, 0), kScene);
@@ -175,7 +181,7 @@ DemoScene = function()
     
     
     
-    --MODE_FREECAM = true;
+    MODE_FREECAM = true;
 
     --if we are not in freecam mode, go ahead and create the cutscene camera
     if (MODE_FREECAM == false) then
@@ -191,9 +197,11 @@ DemoScene = function()
     end
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
-    --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    CutscenePlayer("demo_cutscene", 0);
-    --CutscenePlayer("demo_cutscene", 29);
+    CutsceneEditor("demo_cutscene","sk61_tripp.prop");
+    --CutscenePlayer("demo_cutscene", 0);
+    --CutscenePlayer("demo_cutscene", 38); 
+
+    -- clip 25 and before -- works, 26 and beyond - breaks
 
 --;b,o,u,t,p,n,j
 
@@ -297,5 +305,39 @@ mari_animation_clip_41_update = function()
         end
     end
 end
+
+
+mari_animation_clip_42 = function()
+    clip_42_done = 0;
+    clip_42_time = GetTotalTime() + 0.5;
+    Callback_OnPostUpdate:Add(mari_animation_clip_42_update);   
+    
+end
+
+mari_animation_clip_42_update = function()
+    if clip_42_done == 0 then
+        if GetTotalTime() > clip_42_time then
+            mari_animation_clip_41_controller = PlayAnimation("Mariana", "a371251352");
+            ControllerSetLooping(mari_animation_clip_41_controller , false); 
+            local controller_sound = SoundPlay("a371251352");
+            clip_42_done = 1;
+        end
+    end
+end
+
+
+
+
+
+
+
+
+
+
 --open the scene with this script
+
+
+
+
+
 SceneOpen(kScene, kScript);

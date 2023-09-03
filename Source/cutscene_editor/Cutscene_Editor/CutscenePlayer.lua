@@ -656,10 +656,10 @@ CutscenePlayerUpdate = function()
         for i = 1, player_n_n do
             local player_agent_name = player_agents_data.agents_names[i];
             --voice lines
-            local voice_line_anm = tostring(player_save_data[i].voice_line) .. ".anm";
-            local voice_line_snd = tostring(player_save_data[i].voice_line) .. ".wav";
+            local voice_line_anm = tostring(player_save_data[i].voice_line);-- .. ".anm";
+            local voice_line_snd = tostring(player_save_data[i].voice_line);-- .. ".wav";
             
-            if voice_line_snd ~= "empty.wav" then
+            if voice_line_snd ~= "empty" then
                 --local controller_sound = SoundPlay(voice_line_snd);
                 local controller_sound = SoundPlay(voice_line_snd);
                 
