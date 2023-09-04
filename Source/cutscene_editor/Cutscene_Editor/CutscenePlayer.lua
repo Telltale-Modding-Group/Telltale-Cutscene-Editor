@@ -156,7 +156,8 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
 
 
 
-
+--ui_debug_button.prop
+--ui_carouselDisplay_title.prop
     --choice UI
     --make agents
     agent_choice_ui_1 = AgentCreate("agent_choice_ui_1", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)

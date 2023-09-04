@@ -163,9 +163,9 @@ DemoScene = function()
     --IMPORTANT - Name agents with their Telltale names, if you give them an entirely custom names they might break
     agent_mari = AgentCreate("Mariana", "sk62_mariana.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     
-    agent_anf_1 = AgentCreate("RaiderMale", "sk61_genericMarauder.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
-    agent_anf_2 = AgentCreate("Villager", "sk61_genericVillager.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
-    agent_anf_3 = AgentCreate("RaiderFemale2", "sk62_genericMarauder.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_anf_1 = AgentCreate("Rufus", "sk61_rufus.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_anf_2 = AgentCreate("Eli", "sk61_eli.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_anf_3 = AgentCreate("Roxanne", "sk62_roxanne.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
 
 
     Custom_SetAgentWorldPosition("Tripp", Vector(0, -1000, 0), kScene);
@@ -173,15 +173,19 @@ DemoScene = function()
     Custom_SetAgentWorldPosition("Conrad", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Eleanor", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Jesus", Vector(0, -1000, 0), kScene);
+    
 
-    
-    
+    agent_gun_1 = AgentCreate("Rifle_1", "obj_gunAK47.prop", Vector(-0.054, 1.148, 0.21), Vector(36,55,0), kScene, false, false)
+    AgentAttach("Rifle_1", "Rufus");
+    agent_gun_2 = AgentCreate("Rifle_2", "obj_gunAK47.prop", Vector(-0.054, 1.148, 0.21), Vector(36,55,0), kScene, false, false)
+    AgentAttach("Rifle_2", "Eli");
+
     
     --local controllersTable_character = AgentGetControllers(agent_mari);
     
     
     
-    MODE_FREECAM = true;
+    --MODE_FREECAM = true;
 
     --if we are not in freecam mode, go ahead and create the cutscene camera
     if (MODE_FREECAM == false) then
@@ -197,9 +201,9 @@ DemoScene = function()
     end
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
-    CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    --CutscenePlayer("demo_cutscene", 0);
-    --CutscenePlayer("demo_cutscene", 38); 
+    --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
+    CutscenePlayer("demo_cutscene", 0);
+    --CutscenePlayer("demo_cutscene", 43); 
 
     -- clip 25 and before -- works, 26 and beyond - breaks
 
@@ -283,9 +287,12 @@ end
 
 
 mari_animation_clip_41 = function()
+
+    Custom_SetAgentWorldPosition("Javier", Vector(-0.62880742549896, 0, 1.3940000534058), kScene); -- Javier one-frame teleport fix
+
     clip_41_done = 0;
     clip_41_time = GetTotalTime() + 3.1;
-
+   
     mari_animation_clip_41_controller_2 = PlayAnimation("Mariana", "sk62_clementineStandA_enragedGestureB_add");
     ControllerSetLooping(mari_animation_clip_41_controller_2 , false);
 
