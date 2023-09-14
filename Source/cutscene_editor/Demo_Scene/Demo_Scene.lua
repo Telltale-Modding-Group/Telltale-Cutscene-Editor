@@ -175,13 +175,20 @@ DemoScene = function()
     Custom_SetAgentWorldPosition("Jesus", Vector(0, -1000, 0), kScene);
     
 
-    agent_gun_1 = AgentCreate("Rifle_1", "obj_gunAK47.prop", Vector(-0.054, 1.148, 0.21), Vector(36,55,0), kScene, false, false)
-    AgentAttach("Rifle_1", "Rufus");
-    agent_gun_2 = AgentCreate("Rifle_2", "obj_gunAK47.prop", Vector(-0.054, 1.148, 0.21), Vector(36,55,0), kScene, false, false)
-    AgentAttach("Rifle_2", "Eli");
 
     
-    --local controllersTable_character = AgentGetControllers(agent_mari);
+    agent_gun_1 = AgentCreate("Rifle_1", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
+    agent_gun_2 = AgentCreate("Rifle_2", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
+    
+    --wrist_L
+    --wrist_R
+    local nodeName = "wrist_R";
+    if AgentHasNode(agent_anf_1, nodeName) then
+        AgentAttachToNode(agent_gun_1, agent_anf_1, nodeName);
+    end
+    if AgentHasNode(agent_anf_2, nodeName) then
+        AgentAttachToNode(agent_gun_2, agent_anf_2, nodeName);
+    end
     
     
     
@@ -202,15 +209,14 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    CutscenePlayer("demo_cutscene", 0);
-    --CutscenePlayer("demo_cutscene", 43); 
+    --CutscenePlayer("demo_cutscene", 0);
+    CutscenePlayer("demo_cutscene", 44); 
 
     -- clip 25 and before -- works, 26 and beyond - breaks
 
 --;b,o,u,t,p,n,j
 
 end
-
 
 --custom functions
 
