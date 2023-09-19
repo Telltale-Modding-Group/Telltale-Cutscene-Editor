@@ -153,6 +153,7 @@ end
 DemoScene = function()
     ---debug
 
+
     ResourceSetEnable("ProjectSeason3");
     ResourceSetEnable("WalkingDead301");
     ResourceSetEnable("WalkingDead302");
@@ -175,8 +176,33 @@ DemoScene = function()
     Custom_SetAgentWorldPosition("Jesus", Vector(0, -1000, 0), kScene);
     
 
+    local flashlightColor = RGBColor(255, 200, 0, 255)
 
-    
+    local envlight_groupEnabled = AgentGetProperty("light_Directional", "EnvLight - Enabled Group", kScene)
+    local envlight_groups = AgentGetProperty("light_Directional", "EnvLight - Groups", kScene)
+    local flashlightTestLight_spot = AgentCreate("flashlightTestLight_spot", "module_env_light.prop", Vector(0,3,0), Vector(90, 0, 0), RELIGHT_kScene, false, false)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Type", 1, kScene) --0 point light, 1 spot light
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Intensity", 25, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enlighten Intensity", 0, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Radius", 45, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Distance Falloff", 1, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Spot Angle Inner", 10, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Spot Angle Outer", 40, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Color", flashlightColor, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enabled Group", envlight_groupEnabled, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Groups", envlight_groups, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Type", 2, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Wrap", 0.0, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Quality", 3, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - HBAO Participation Type", 2, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Near Clip", 0.0, kScene)
+    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Depth Bias", -0.5, kScene)
+
+    AgentSetProperty("EnvLight - Color", "Rufus", flashlightColor, kScene)
+
+
+    AgentAttach("flashlightTestLight_spot", "Rufus");
+
     agent_gun_1 = AgentCreate("Rifle_1", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
     agent_gun_2 = AgentCreate("Rifle_2", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
     
@@ -209,8 +235,8 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    --CutscenePlayer("demo_cutscene", 0);
-    CutscenePlayer("demo_cutscene", 44); 
+    CutscenePlayer("demo_cutscene", 0);
+    --CutscenePlayer("demo_cutscene", 50); 
 
     -- clip 25 and before -- works, 26 and beyond - breaks
 
@@ -340,12 +366,48 @@ end
 
 
 
+voice_clip_56 = function()
+    clip_56_done = 0;
+    clip_56_time = GetTotalTime() + 2;
+    Callback_OnPostUpdate:Add(voice_clip_56_update);   
+end
+
+voice_clip_56_update = function()
+    if clip_56_done == 0 then
+        if GetTotalTime() > clip_56_time then
+            local controller_sound = SoundPlay("a371560889");
+            clip_56_done = 1;
+        end
+    end
+end
 
 
+voice_clip_57 = function()
+    clip_57_done = 0;
+    clip_57_done_2 = 0;
+    clip_57_time = GetTotalTime() + 2;
+    clip_57_time_2 = GetTotalTime() + 4;
+    Callback_OnPostUpdate:Add(voice_clip_57_update);   
+end
 
-
-
-
+voice_clip_57_update = function()
+    if clip_57_done == 0 then
+        if GetTotalTime() > clip_57_time then
+            rufus_animation_clip_57_controller = PlayAnimation("Rufus", "a371560891");
+            ControllerSetLooping(rufus_animation_clip_57_controller , false);
+            local controller_sound = SoundPlay("a371560891");
+            clip_57_done = 1;
+        end
+    end
+    if clip_57_done_2 == 0 then
+        if GetTotalTime() > clip_57_time_2 then
+            eli_animation_clip_57_controller = PlayAnimation("Eli", "a371560892");
+            ControllerSetLooping(eli_animation_clip_57_controller , false);
+            local controller_sound = SoundPlay("a371560892");
+            clip_57_done_2 = 1;
+        end
+    end
+end
 
 --open the scene with this script
 
