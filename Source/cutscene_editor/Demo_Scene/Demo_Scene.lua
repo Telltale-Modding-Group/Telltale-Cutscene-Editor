@@ -175,33 +175,53 @@ DemoScene = function()
     Custom_SetAgentWorldPosition("Eleanor", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Jesus", Vector(0, -1000, 0), kScene);
     
-
-    local flashlightColor = RGBColor(255, 200, 0, 255)
-
+    --light for Act 1 ANF guards and Mariana
+    local flashlightColor = RGBColor(255, 255, 255, 50)
     local envlight_groupEnabled = AgentGetProperty("light_Directional", "EnvLight - Enabled Group", kScene)
     local envlight_groups = AgentGetProperty("light_Directional", "EnvLight - Groups", kScene)
-    local flashlightTestLight_spot = AgentCreate("flashlightTestLight_spot", "module_env_light.prop", Vector(0,3,0), Vector(90, 0, 0), RELIGHT_kScene, false, false)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Type", 1, kScene) --0 point light, 1 spot light
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Intensity", 25, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enlighten Intensity", 0, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Radius", 45, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Distance Falloff", 1, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Spot Angle Inner", 10, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Spot Angle Outer", 40, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Color", flashlightColor, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enabled Group", envlight_groupEnabled, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Groups", envlight_groups, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Type", 2, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Wrap", 0.0, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Quality", 3, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - HBAO Participation Type", 2, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Near Clip", 0.0, kScene)
-    AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Depth Bias", -0.5, kScene)
-
-    AgentSetProperty("EnvLight - Color", "Rufus", flashlightColor, kScene)
-
-
+    local flashlightTestLight_spot = AgentCreate("flashlightTestLight_spot", "module_env_light.prop", Vector(0,1.8,2), Vector(160, 0, 0), kScene, false, false)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Type", 1, kScene) --0 point light, 1 spot light
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Intensity", 1, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enlighten Intensity", 0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Radius", 80, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Distance Falloff", 1, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Spot Angle Inner", 10, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Spot Angle Outer", 90, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Color", flashlightColor, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enabled Group", envlight_groupEnabled, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Groups", envlight_groups, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Type", 0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Wrap", 0.0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Quality", 3, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - HBAO Participation Type", 2, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Near Clip", 0.0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Depth Bias", -0.5, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Mobility", 2, kScene) --lets the light to move around
     AgentAttach("flashlightTestLight_spot", "Rufus");
+
+    
+    local flashlightTestLight_spot = AgentCreate("flashlightTestLight_spot_2", "module_env_light.prop", Vector(0,2,2), Vector(160, 0, 0), kScene, false, false)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Type", 1, kScene) --0 point light, 1 spot light
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Intensity", 1, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Enlighten Intensity", 0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Radius", 5, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Distance Falloff", 1, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Spot Angle Inner", 10, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Spot Angle Outer", 50, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Color", flashlightColor, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Enabled Group", envlight_groupEnabled, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Groups", envlight_groups, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Shadow Type", 0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Wrap", 0.0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Shadow Quality", 3, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - HBAO Participation Type", 2, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Shadow Near Clip", 0.0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Shadow Depth Bias", -0.5, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Mobility", 2, kScene) --lets the light to move around
+    AgentAttach("flashlightTestLight_spot_2", "Mariana");
+
+
+
 
     agent_gun_1 = AgentCreate("Rifle_1", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
     agent_gun_2 = AgentCreate("Rifle_2", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
@@ -364,6 +384,30 @@ mari_animation_clip_42_update = function()
     end
 end
 
+anm_clip_53 = function()
+    anm_clip_53_controller = PlayAnimation("Eli", "sk61_javierStandA_lookAround_add");
+    ControllerSetLooping(anm_clip_53_controller , false);    
+end
+
+anm_clip_54 = function()
+    clip_55_done = 0;
+    clip_55_time = GetTotalTime() + 3;
+    anm_clip_54_controller = PlayAnimation("Rufus", "sk61_javierTense_lookBehindRight_add");
+    ControllerSetLooping(anm_clip_54_controller , false);
+    Callback_OnPostUpdate:Add(anm_clip_54_update);   
+end
+
+
+anm_clip_54_update = function()
+    if clip_55_done == 0 then
+        if GetTotalTime() < clip_55_time then
+            Custom_SetAgentWorldPosition("obj_lookAtRufusEyes", Vector(1000, 0, 0), kScene);
+        else
+            clip_55_done = 1
+        end
+    end
+end
+
 
 
 voice_clip_56 = function()
@@ -409,9 +453,28 @@ voice_clip_57_update = function()
     end
 end
 
+
+clem_anm_clip_60 = function()
+
+    clip_60_done = 0;
+    clip_60_time = GetTotalTime() + 1;
+    Callback_OnPostUpdate:Add(clem_anm_clip_60_update);   
+
+end
+
+clem_anm_clip_60_update = function()
+    if clip_60_done == 0 then
+        if GetTotalTime() > clip_60_time then
+            clem_anm_clip_60_controller = PlayAnimation("Clementine", "sk62_clementine400StandA_lookLeft_add");
+            ControllerSetContribution(clem_anm_clip_60_controller, 0.5);
+            ControllerSetLooping(clem_anm_clip_60_controller , false);
+            clip_60_done = 1;
+        end
+    end
+end
+
+
 --open the scene with this script
-
-
 
 
 
