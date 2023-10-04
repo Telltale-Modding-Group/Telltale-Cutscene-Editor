@@ -105,7 +105,7 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
     player_agents_data = LIP.load(player_agents_names_path); --agents data, info from agents file, controls agent indexes
     
     player_n_n = #(player_agents_data.agents_names);
-
+    
     player_clip = clip_to_start_from;
 
 
@@ -142,6 +142,7 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
         root_iteration[i] = 0;
         local dummy_name = "Dummy" .. tostring(i);
         DummyPosNew[i] = AgentGetPos(dummy_name);
+        DummyRotNew[i] = AgentGetRot(dummy_name);
         --root_reset[i] = 0;
     end
     move_start_time_pos_camera = GetTotalTime();
@@ -279,7 +280,6 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
 
 
 
-
     Callback_OnPostUpdate:Add(CutscenePlayerUpdate);
 
 end
@@ -322,31 +322,16 @@ CutscenePlayerUpdate = function()
             ControllerKill(player_animationPreview[i]);
             ControllerKill(player_animationPreviewDummy[i]);
             player_resetAnimation(i);
-            --root_reset[i] = 0;
-            
-            --move_to_pos_finish[i] = 0;
-            --move_to_rot_finish[i] = 0;
+
             move_start_time_pos[i] = GetTotalTime();
             move_start_time_rot[i] = GetTotalTime();
 
-
             --reset pos to prevent animation single frame mess ups when killing controllers
-            
-            --player_resetAnimation(i);
+
             root_iteration[i] = 0;
             local dummy_name = "Dummy" .. tostring(i);
             DummyPosNew[i] = AgentGetPos(dummy_name); -- for mode 2, important, do not remove
             DummyRotNew[i] = AgentGetRot(dummy_name);
-            --local player_agent_name = player_agents_data.agents_names[i];
-            --local player_LoadAgentPos = Vector(player_save_data[i].pos_x, player_save_data[i].pos_y, player_save_data[i].pos_z);
-            --Custom_SetAgentWorldPosition(player_agent_name, player_LoadAgentPos, Custom_CutsceneDev_SceneObject);
-            --local player_LoadAgentRot = Vector(player_save_data[i].rot_x, player_save_data[i].rot_y, player_save_data[i].rot_z);
-            --Custom_SetAgentRotation(player_agent_name, player_LoadAgentRot, Custom_CutsceneDev_SceneObject);
-            --local dummy_name = "Dummy" .. tostring(i);
-            --Custom_SetAgentWorldPosition(dummy_name, Vector(0, 0, 0), Custom_CutsceneDev_SceneObject);
-            --Custom_SetAgentRotation(dummy_name, Vector(0, 0, 0), Custom_CutsceneDev_SceneObject);
-        
-        
         end
 
         local player_LoadAgentPos = Vector(player_save_data.camera.pos_x, player_save_data.camera.pos_y, player_save_data.camera.pos_z);

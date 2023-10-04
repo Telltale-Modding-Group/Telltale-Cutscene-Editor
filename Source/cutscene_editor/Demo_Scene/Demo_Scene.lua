@@ -169,6 +169,14 @@ DemoScene = function()
     agent_anf_3 = AgentCreate("Roxanne", "sk62_roxanne.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
 
 
+
+    agent_zombie_1 = AgentCreate("Zombie_1", "sk61_zombie.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_zombie_2 = AgentCreate("Zombie_2", "sk61_zombieBulldozered.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_zombie_3 = AgentCreate("Zombie_3", "sk61_zombieCracked.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_zombie_4 = AgentCreate("Zombie_4", "sk61_zombieFaceless.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_zombie_5 = AgentCreate("Zombie_5", "sk61_zombieGuts.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_zombie_6 = AgentCreate("Zombie_6", "sk61_zombieOverpass.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+
     Custom_SetAgentWorldPosition("Tripp", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Kate", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Conrad", Vector(0, -1000, 0), kScene);
@@ -190,7 +198,7 @@ DemoScene = function()
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Color", flashlightColor, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enabled Group", envlight_groupEnabled, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Groups", envlight_groups, kScene)
-    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Type", 0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Type", 0, kScene) -- 0 to disable shadows
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Wrap", 0.0, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Shadow Quality", 3, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - HBAO Participation Type", 2, kScene)
@@ -211,7 +219,7 @@ DemoScene = function()
     Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Color", flashlightColor, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Enabled Group", envlight_groupEnabled, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Groups", envlight_groups, kScene)
-    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Shadow Type", 0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Shadow Type", 0, kScene) -- 0 to disable shadows
     Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Wrap", 0.0, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Shadow Quality", 3, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - HBAO Participation Type", 2, kScene)
@@ -220,6 +228,32 @@ DemoScene = function()
     Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Mobility", 2, kScene) --lets the light to move around
     AgentAttach("flashlightTestLight_spot_2", "Mariana");
 
+    for i = 1, 6 do 
+        local light_name = "flashlightTestLight_spot_z_" .. tostring(i);
+        local zombie_name = "Zombie_" .. tostring(i);
+        local flashlightTestLight_spot = AgentCreate(light_name, "module_env_light.prop", Vector(0,2,2), Vector(160, 0, 0), kScene, false, false)
+        Custom_AgentSetProperty(light_name, "EnvLight - Type", 1, kScene) --0 point light, 1 spot light
+        Custom_AgentSetProperty(light_name, "EnvLight - Intensity", 1, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Enlighten Intensity", 0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Radius", 5, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Distance Falloff", 1, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Spot Angle Inner", 10, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Spot Angle Outer", 50, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Color", flashlightColor, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Enabled Group", envlight_groupEnabled, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Groups", envlight_groups, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Shadow Type", 0, kScene) -- 0 to disable shadows
+        Custom_AgentSetProperty(light_name, "EnvLight - Wrap", 0.0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Shadow Quality", 3, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - HBAO Participation Type", 2, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Shadow Near Clip", 0.0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Shadow Depth Bias", -0.5, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Mobility", 2, kScene) --lets the light to move around
+        AgentAttach(light_name, zombie_name);
+    end
+
+
+    
 
 
 
@@ -255,8 +289,8 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    CutscenePlayer("demo_cutscene", 0);
-    --CutscenePlayer("demo_cutscene", 50); 
+    --CutscenePlayer("demo_cutscene", 0);
+    CutscenePlayer("demo_cutscene", 64); 
 
     -- clip 25 and before -- works, 26 and beyond - breaks
 
@@ -470,6 +504,24 @@ clem_anm_clip_60_update = function()
             ControllerSetLooping(clem_anm_clip_60_controller , false);
             clip_60_done = 1;
         end
+    end
+end
+
+
+spawn_guns_clip_67 = function()
+    agent_pistol_1 = AgentCreate("Pistol_1", "obj_gunP250.prop", Vector(-0.08, 0.86, 0.25), Vector(0,0,-60), kScene, false, false)
+    agent_pistol_2 = AgentCreate("Pistol_2", "obj_gunP250.prop", Vector(-0.08, 0.86, 0.25), Vector(0,0,-60), kScene, false, false)
+    
+    Custom_SetAgentWorldPosition("Javier", Vector(0, 0, 0), kScene);
+    Custom_SetAgentWorldPosition("Clementine", Vector(0, 0, 0), kScene);
+    --wrist_L
+    --wrist_R
+    local nodeName = "wrist_R";
+    if AgentHasNode("Javier", nodeName) then
+        AgentAttachToNode(agent_pistol_1, "Javier", nodeName);
+    end
+    if AgentHasNode("Clementine", nodeName) then
+        AgentAttachToNode(agent_pistol_2, "Clementine", nodeName);
     end
 end
 
