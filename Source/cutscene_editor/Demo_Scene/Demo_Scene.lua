@@ -289,8 +289,9 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
+    
     --CutscenePlayer("demo_cutscene", 0);
-    CutscenePlayer("demo_cutscene", 64); 
+    CutscenePlayer("demo_cutscene", 63); 
 
     -- clip 25 and before -- works, 26 and beyond - breaks
 
@@ -509,11 +510,12 @@ end
 
 
 spawn_guns_clip_67 = function()
-    agent_pistol_1 = AgentCreate("Pistol_1", "obj_gunP250.prop", Vector(-0.08, 0.86, 0.25), Vector(0,0,-60), kScene, false, false)
-    agent_pistol_2 = AgentCreate("Pistol_2", "obj_gunP250.prop", Vector(-0.08, 0.86, 0.25), Vector(0,0,-60), kScene, false, false)
-    
+    agent_pistol_1 = AgentCreate("Pistol_1", "obj_gunM1911.prop", Vector(-0.05, 0.778, 0.25), Vector(90,95,0), kScene, false, false)--DO NOT get these numbers from starting clip
+    agent_pistol_2 = AgentCreate("Pistol_2", "obj_gunP250.prop", Vector(-0.08, 0.87, 0.25), Vector(5,0,-60), kScene, false, false)--DO NOT get these numbers from starting clip
+
     Custom_SetAgentWorldPosition("Javier", Vector(0, 0, 0), kScene);
     Custom_SetAgentWorldPosition("Clementine", Vector(0, 0, 0), kScene);
+    
     --wrist_L
     --wrist_R
     local nodeName = "wrist_R";
@@ -526,8 +528,45 @@ spawn_guns_clip_67 = function()
 end
 
 
+spawn_knife_clip_70 = function()
+    agent_knife_1 = AgentCreate("Knife_1", "obj_knifeKABAR.prop", Vector(-0.33, 0.8, 0.25), Vector(5,15,0), kScene, false, false) --DO NOT get these numbers from starting clip
+    Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene);
+    Custom_SetAgentWorldRotation("Mariana", Vector(0.98, -326, 0), kScene);
+    --wrist_L
+    --wrist_R
+    local nodeName = "wrist_R";
+    if AgentHasNode("Mariana", nodeName) then
+        AgentAttachToNode(agent_knife_1, "Mariana", nodeName); 
+    end
+end
+
+knife_re_pos_clip_71 = function()
+    clip_71_done = 0;
+    clip_71_time = GetTotalTime() + 2.5;
+    Callback_OnPostUpdate:Add(knife_re_pos_clip_71_update); 
+end
+
+
+knife_re_pos_clip_71_update = function()
+    if clip_71_done == 0 then
+        if GetTotalTime() > clip_71_time then
+            --Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene);
+            --Custom_SetAgentWorldRotation("Mariana", Vector(0.98, -326, 0), kScene);
+            Custom_SetAgentWorldRotation("Knife_1", Vector(235,235,0), kScene);
+            clip_71_done = 1;
+        end
+    end
+end
+
+
+mari_anm_clip_73 = function()
+    mari_animation_clip_73_controller = PlayAnimation("Mariana", "clementine_headGesture_nodYesQuick_add");
+    ControllerSetLooping(mari_animation_clip_73_controller , false); 
+    mari_animation_clip_73_controller_2 = PlayAnimation("Mariana", "clementine_headEyeGesture_lookLeft_add");
+    ControllerSetLooping(mari_animation_clip_73_controller_2 , false); 
+end 
+
+
+
 --open the scene with this script
-
-
-
 SceneOpen(kScene, kScript);
