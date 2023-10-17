@@ -289,8 +289,8 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    CutscenePlayer("demo_cutscene", 0);
-    --CutscenePlayer("demo_cutscene", 63); 
+    --CutscenePlayer("demo_cutscene", 0);
+    CutscenePlayer("demo_cutscene", 63); 
 
     -- clip 25 and before -- works, 26 and beyond - breaks
 
@@ -509,6 +509,11 @@ end
 
 
 spawn_guns_clip_67 = function()
+    mari_animation_clip_63_controller = PlayAnimation("Mariana", "sk62_clementineStandA_toTense");
+    ControllerSetLooping(mari_animation_clip_63_controller , false); 
+    ControllerSetContribution(mari_animation_clip_63_controller, 0.6);
+    ControllerSetPriority(mari_animation_clip_63_controller, 300);
+    
     agent_pistol_1 = AgentCreate("Pistol_1", "obj_gunM1911.prop", Vector(-0.05, 0.778, 0.25), Vector(90,95,0), kScene, false, false)--DO NOT get these numbers from starting clip
     agent_pistol_2 = AgentCreate("Pistol_2", "obj_gunP250.prop", Vector(-0.08, 0.87, 0.25), Vector(5,0,-60), kScene, false, false)--DO NOT get these numbers from starting clip
 
@@ -565,7 +570,6 @@ mari_anm_clip_73 = function()
     mari_animation_clip_73_controller_2 = PlayAnimation("Mariana", "clementine_headEyeGesture_lookLeft_add");
     ControllerSetLooping(mari_animation_clip_73_controller_2 , false); 
 end 
-
 
 
 --open the scene with this script
