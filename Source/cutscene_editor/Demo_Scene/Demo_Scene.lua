@@ -289,9 +289,8 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    
-    --CutscenePlayer("demo_cutscene", 0);
-    CutscenePlayer("demo_cutscene", 63); 
+    CutscenePlayer("demo_cutscene", 0);
+    --CutscenePlayer("demo_cutscene", 63); 
 
     -- clip 25 and before -- works, 26 and beyond - breaks
 
@@ -529,7 +528,8 @@ end
 
 
 spawn_knife_clip_70 = function()
-    agent_knife_1 = AgentCreate("Knife_1", "obj_knifeKABAR.prop", Vector(-0.33, 0.8, 0.25), Vector(5,15,0), kScene, false, false) --DO NOT get these numbers from starting clip
+    --agent_knife_1 = AgentCreate("Knife_1", "obj_knifeKABAR.prop", Vector(-0.33, 0.8, 0.25), Vector(5,15,0), kScene, false, false) --DO NOT get these numbers from starting clip
+    agent_knife_1 = AgentCreate("Knife_1", "obj_knifeKABAR.prop", Vector(-0.165, 0.705, 0.12), Vector(5,55,0), kScene, false, false) --DO NOT get these numbers from starting clip
     Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene);
     Custom_SetAgentWorldRotation("Mariana", Vector(0.98, -326, 0), kScene);
     --wrist_L
