@@ -184,6 +184,8 @@ DemoScene = function()
     Custom_SetAgentWorldPosition("Conrad", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Eleanor", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Jesus", Vector(0, -1000, 0), kScene);
+
+    Custom_SetAgentWorldPosition("Javier", Vector(0, 0, 0), kScene);
     
     --light for Act 1 ANF guards and Mariana
     local flashlightColor = RGBColor(255, 255, 255, 50)
@@ -262,6 +264,8 @@ DemoScene = function()
     agent_gun_1 = AgentCreate("Rifle_1", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
     agent_gun_2 = AgentCreate("Rifle_2", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
     
+    agent_bat = AgentCreate("Bat", "obj_batAluminum.prop", Vector(-0.541, 0.93, -0.03), Vector(10,-15,50), kScene, false, false)
+    
     --wrist_L
     --wrist_R
     local nodeName = "wrist_R";
@@ -271,7 +275,13 @@ DemoScene = function()
     if AgentHasNode(agent_anf_2, nodeName) then
         AgentAttachToNode(agent_gun_2, agent_anf_2, nodeName);
     end
+    if AgentHasNode("Javier", nodeName) then
+        AgentAttachToNode(agent_bat, "Javier", nodeName);
+    end
+    Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
     
+    
+    clip_81_played_once = 0;
     
     
     --MODE_FREECAM = true;
@@ -291,9 +301,9 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    --CutscenePlayer("demo_cutscene", 0);
-    --CutscenePlayer("demo_cutscene", 74);
-    CutscenePlayer("demo_cutscene", 69);
+    CutscenePlayer("demo_cutscene", 0);
+    --CutscenePlayer("demo_cutscene", 84);
+    --CutscenePlayer("demo_cutscene", 63);
 
 
 --;b,o,u,t,p,n,j
@@ -597,6 +607,91 @@ end
 knife_re_pos_clip_80 = function()
     Custom_SetAgentWorldRotation("Knife_1", Vector(30,-295,-45), kScene);
 end
+
+gun_visible_clip_78 = function()
+    Custom_AgentSetProperty("Pistol_1",  "Runtime: Visible", true, kScene)
+    Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
+end
+
+
+spawn_bat_clip_81 = function()
+    Custom_AgentSetProperty("Pistol_1",  "Runtime: Visible", false, kScene)
+    Custom_AgentSetProperty("Bat",  "Runtime: Visible", true, kScene)
+    --QTE stuff
+    
+    clip_81_time = GetTotalTime() + 3.5;
+    clip_81_time_2 = GetTotalTime() + 3.7;
+    clip_81_done = 0;
+    QTE_done = 0;
+    if clip_81_played_once == 0 then
+        Callback_OnPostUpdate:Add(clip_81_QTE_update); 
+        clip_81_played_once = 1;
+    end
+end
+
+clip_81_QTE_update = function()
+    if clip_81_done == 0 then
+        if GetTotalTime() > clip_81_time and QTE_done == 1 then
+            chosen_text = 1;
+            clip_81_done = 1;
+        elseif Custom_InputKeyPress(69) then -- Check if E is pressed 
+            QTE_done = 1;
+            --clip_81_done = 1;
+        end
+    end
+    if GetTotalTime() > clip_81_time_2 then
+        clip_81_done = 1;
+    end
+end
+
+snd_clip_82 = function()
+    clip_82_done = 0;
+    clip_82_time = GetTotalTime() + 1.2;
+    Callback_OnPostUpdate:Add(snd_clip_82_update);   
+end
+
+snd_clip_82_update = function()
+    if clip_82_done == 0 then
+        if GetTotalTime() > clip_82_time then
+            local controller_sound = SoundPlay("a371257243");
+            clip_82_done = 1;
+        end
+    end
+end
+
+weapons_visible_clip_84 = function()
+    Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", false, kScene)
+    Callback_OnPostUpdate:Add(weapons_visible_clip_84_update);   
+    clip_84_done = 0;
+    clip_84_time = GetTotalTime() + 1; 
+end
+
+weapons_visible_clip_84_update = function()
+    if clip_84_done == 0 then
+        if GetTotalTime() > clip_84_time then
+            Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
+            clip_84_done = 1;
+        end
+    end
+    
+end
+
+shot_clip_85 = function()
+    clip_85_done = 0;
+    clip_85_time = GetTotalTime() + 1.5;
+    Callback_OnPostUpdate:Add(shot_clip_85_update);   
+end
+
+shot_clip_85_update= function()
+    if clip_85_done == 0 then
+        if GetTotalTime() > clip_85_time then
+            clem_animation_clip_85_controller = PlayAnimation("Clementine", "sk61_javierStandAAimPistol_fire_add");
+            ControllerSetLooping(clem_animation_clip_85_controller , false); 
+            clip_85_done = 1;
+        end
+    end  
+end
+
 
 --open the scene with this script
 SceneOpen(kScene, kScript);
