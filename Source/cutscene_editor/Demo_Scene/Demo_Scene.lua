@@ -175,7 +175,9 @@ DemoScene = function()
     agent_zombie_3 = AgentCreate("Zombie_3", "sk61_zombieCracked.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     agent_zombie_4 = AgentCreate("Zombie_4", "sk61_zombieFaceless.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     agent_zombie_5 = AgentCreate("Zombie_5", "sk61_zombieGuts.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
-    agent_zombie_6 = AgentCreate("Zombie_6", "sk61_zombieOverpass.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_zombie_6 = AgentCreate("Zombie_6", "sk61_zombie.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+    agent_zombie_7 = AgentCreate("Zombie_7", "sk61_zombieFaceless.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
+
 
     Custom_SetAgentWorldPosition("Tripp", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Kate", Vector(0, -1000, 0), kScene);
@@ -228,7 +230,7 @@ DemoScene = function()
     Custom_AgentSetProperty("flashlightTestLight_spot_2", "EnvLight - Mobility", 2, kScene) --lets the light to move around
     AgentAttach("flashlightTestLight_spot_2", "Mariana");
 
-    for i = 1, 6 do 
+    for i = 1, 7 do 
         local light_name = "flashlightTestLight_spot_z_" .. tostring(i);
         local zombie_name = "Zombie_" .. tostring(i);
         local flashlightTestLight_spot = AgentCreate(light_name, "module_env_light.prop", Vector(0,2,2), Vector(160, 0, 0), kScene, false, false)
@@ -290,9 +292,9 @@ DemoScene = function()
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
     --CutscenePlayer("demo_cutscene", 0);
-    CutscenePlayer("demo_cutscene", 63); 
+    --CutscenePlayer("demo_cutscene", 74);
+    CutscenePlayer("demo_cutscene", 69);
 
-    -- clip 25 and before -- works, 26 and beyond - breaks
 
 --;b,o,u,t,p,n,j
 
@@ -543,7 +545,23 @@ spawn_knife_clip_70 = function()
     if AgentHasNode("Mariana", nodeName) then
         AgentAttachToNode(agent_knife_1, "Mariana", nodeName); 
     end
+    Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", false, kScene)
+
+    clip_70_done = 0;
+    clip_70_time = GetTotalTime() + 0.6;
+    Callback_OnPostUpdate:Add(spawn_knife_clip_70_update); 
 end
+
+spawn_knife_clip_70_update = function()
+    if clip_70_done == 0 then
+        if GetTotalTime() > clip_70_time then
+
+            Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", true, kScene)
+            clip_70_done = 1;
+        end
+    end
+end
+
 
 knife_re_pos_clip_71 = function()
     clip_71_done = 0;
@@ -571,6 +589,14 @@ mari_anm_clip_73 = function()
     ControllerSetLooping(mari_animation_clip_73_controller_2 , false); 
 end 
 
+mari_pos_correction_clip_75 = function()
+    Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene); -- Mari one-frame teleport fix
+    Custom_SetAgentWorldPosition("Gabe", Vector(0, 0, 0), kScene); -- Gabe one-frame teleport fix
+end 
+
+knife_re_pos_clip_80 = function()
+    Custom_SetAgentWorldRotation("Knife_1", Vector(30,-295,-45), kScene);
+end
 
 --open the scene with this script
 SceneOpen(kScene, kScript);

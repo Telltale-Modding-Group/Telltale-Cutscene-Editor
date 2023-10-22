@@ -70,6 +70,7 @@ player_AnimationPrewierPlay = function(player_agent_name_2, ii) --set and play a
     ControllerSetContribution(player_animationPreviewDummy[ii], 1);
     ControllerSetPriority(player_animationPreviewDummy[ii], 200);
     if player_save_data[ii].mode == 2 then
+        mode_2_first_run[ii] = 1;
         ControllerSetLooping(player_animationPreviewDummy[ii] , false);
     else
         ControllerSetLooping(player_animationPreviewDummy[ii] , true);
@@ -113,6 +114,9 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
     for i = 1, player_n_n do
         local dummy_name = "Dummy" .. tostring(i);
         player_Dummy_array[i] = AgentCreate(dummy_name, "dummy.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false);
+
+        
+        
         --local dummy_controller_test = PlayAnimation(dummy_name, "sk55_jane_walkHoldBabySnowstorm.anm");
         --ControllerKill(dummy_controller_test);
     end
@@ -132,11 +136,13 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
     root_iteration = {};
     DummyPosNew = {};
     DummyRotNew = {};
+    mode_2_first_run = {}; --required for correct timing of iterations for mode 2 in starting clip
     --root_reset = {};
 
     for i = 1, player_n_n do
         --move_to_pos_finish[i] = 0;
         --move_to_rot_finish[i] = 0;
+        mode_2_first_run[i] = 0;
         move_start_time_pos[i] = GetTotalTime();
         move_start_time_rot[i] = GetTotalTime();
         root_iteration[i] = 0;
@@ -485,7 +491,7 @@ CutscenePlayerUpdate = function()
                 Custom_SetAgentRotation(player_agent_name, ControllerRot, Custom_CutsceneDev_SceneObject);
 
                 --controlls continuous root motion
-                if ControllerIsPlaying(player_animationPreviewDummy[i]) == false then
+                if ControllerIsPlaying(player_animationPreviewDummy[i]) == false and mode_2_first_run[i] == 1 then
                     local dummy_name = "Dummy" .. tostring(i);
                     DummyPosNew[i] = AgentGetPos(dummy_name);
                     DummyRotNew[i] = AgentGetRot(dummy_name);
