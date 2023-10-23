@@ -282,6 +282,7 @@ DemoScene = function()
     
     
     clip_81_played_once = 0;
+    clip_82_played_once = 0;
     
     
     --MODE_FREECAM = true;
@@ -301,9 +302,9 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    CutscenePlayer("demo_cutscene", 0);
+    --CutscenePlayer("demo_cutscene", 0);
     --CutscenePlayer("demo_cutscene", 84);
-    --CutscenePlayer("demo_cutscene", 63);
+    CutscenePlayer("demo_cutscene", 65);
 
 
 --;b,o,u,t,p,n,j
@@ -560,12 +561,13 @@ spawn_knife_clip_70 = function()
     clip_70_done = 0;
     clip_70_time = GetTotalTime() + 0.6;
     Callback_OnPostUpdate:Add(spawn_knife_clip_70_update); 
+    
 end
 
 spawn_knife_clip_70_update = function()
     if clip_70_done == 0 then
         if GetTotalTime() > clip_70_time then
-
+            local controller_sound = SoundPlay("S4_sfx_draw_knife_sheath");
             Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", true, kScene)
             clip_70_done = 1;
         end
@@ -575,7 +577,13 @@ end
 
 knife_re_pos_clip_71 = function()
     clip_71_done = 0;
+    clip_71_done_stab1 = 0;
+    clip_71_done_stab2 = 0;
+    clip_71_done_body = 0;
     clip_71_time = GetTotalTime() + 2.5;
+    clip_71_time_stab1 = GetTotalTime() + 1;
+    clip_71_time_stab2 = GetTotalTime() + 2.66;
+    clip_71_time_body = GetTotalTime() + 4;
     Callback_OnPostUpdate:Add(knife_re_pos_clip_71_update); 
 end
 
@@ -583,13 +591,33 @@ end
 knife_re_pos_clip_71_update = function()
     if clip_71_done == 0 then
         if GetTotalTime() > clip_71_time then
-            --Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene);
-            --Custom_SetAgentWorldRotation("Mariana", Vector(0.98, -326, 0), kScene);
+
             Custom_SetAgentWorldRotation("Knife_1", Vector(235,235,0), kScene);
             clip_71_done = 1;
         end
+        if clip_71_done_stab1 == 0 and GetTotalTime() > clip_71_time_stab1 then
+
+            local controller_sound = SoundPlay("S4_sfx_stab_gore_blood_05");
+            clip_71_done_stab1 = 1;
+        end
+    
     end
+    if clip_71_done_stab2 == 0 then
+        if GetTotalTime() > clip_71_time_stab2 then
+            local controller_sound = SoundPlay("S4_sfx_stab_gore_blood_04");
+            local controller_sound = SoundPlay("S3_NV_Mariana_fighting_alt07.wav");
+            clip_71_done_stab2 = 1;
+        end
+    end
+    if clip_71_done_body == 0 then
+        if GetTotalTime() > clip_71_time_body then
+            local controller_sound = SoundPlay("S4_SFX_bodyfall_8");
+            clip_71_done_body = 1;
+        end
+    end
+
 end
+
 
 
 mari_anm_clip_73 = function()
@@ -611,6 +639,7 @@ end
 gun_visible_clip_78 = function()
     Custom_AgentSetProperty("Pistol_1",  "Runtime: Visible", true, kScene)
     Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
+    sounds_clip_78();
 end
 
 
@@ -647,7 +676,10 @@ end
 snd_clip_82 = function()
     clip_82_done = 0;
     clip_82_time = GetTotalTime() + 1.2;
-    Callback_OnPostUpdate:Add(snd_clip_82_update);   
+    if clip_82_played_once == 0 then
+        Callback_OnPostUpdate:Add(snd_clip_82_update);  
+        clip_82_played_once = 1;
+    end
 end
 
 snd_clip_82_update = function()
@@ -686,10 +718,156 @@ shot_clip_85_update= function()
     if clip_85_done == 0 then
         if GetTotalTime() > clip_85_time then
             clem_animation_clip_85_controller = PlayAnimation("Clementine", "sk61_javierStandAAimPistol_fire_add");
+            local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_1");
             ControllerSetLooping(clem_animation_clip_85_controller , false); 
             clip_85_done = 1;
         end
     end  
+end
+
+--Sound effects
+
+sounds_clip_66 = function()
+    
+    local controller_sound = SoundPlay("S4_Zombie_Nick_Low_2");
+end
+
+sounds_clip_68 = function()
+    clip_68_done = 0;
+    clip_68_time = GetTotalTime() + 0.5;
+    clip_68_time_2 = GetTotalTime() + 0.8;
+    clip_68_time_3 = GetTotalTime() + 1.5;
+    clip_68_time_4 = GetTotalTime() + 2.1;
+    clip_68_time_5 = GetTotalTime() + 3;
+    clip_68_time_6 = GetTotalTime() + 3.4;
+    clip_68_time_7 = GetTotalTime() + 3.9;
+    clip_68_time_8 = GetTotalTime() + 4.2;
+    clip_68_time_9 = GetTotalTime() + 4.6;
+    clip_68_time_10 = GetTotalTime() + 4.8;
+
+    clip_68_time_hit = 1.23
+    clip_68_time_hit_2 = 2.06
+    clip_68_time_hit_3 = 4
+    local controller_sound = SoundPlay("S4_Zombie3D_LP_1")
+    local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_01");
+    Callback_OnPostUpdate:Add(sounds_clip_68_update);   
+end
+
+sounds_clip_68_update = function()
+    if clip_68_done ~= 10 then
+        if clip_68_done == 0 then
+            if GetTotalTime() > clip_68_time then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_01");
+                clip_68_done = 1;
+            end
+        elseif clip_68_done == 1 then
+            if GetTotalTime() > clip_68_time_2 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_02");
+                clip_68_done = 2;
+            end
+        elseif clip_68_done == 2 then
+            if GetTotalTime() > clip_68_time_hit then
+                local controller_sound = SoundPlay("S4_Imp_Bullet_Flesh_02");
+                clip_68_done = 22;
+            end
+        elseif clip_68_done == 22 then
+            if GetTotalTime() > clip_68_time_3 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_03");
+                clip_68_done = 3;
+            end
+        elseif clip_68_done == 3 then
+            if GetTotalTime() > clip_68_time_hit_2 then
+                local controller_sound = SoundPlay("S4_Imp_Bullet_Flesh_03");
+                clip_68_done = 33;
+            end
+        elseif clip_68_done == 33 then
+            if GetTotalTime() > clip_68_time_4 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_04");
+                clip_68_done = 4;
+            end
+        elseif clip_68_done == 4 then
+            if GetTotalTime() > clip_68_time_5 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_05");
+                clip_68_done = 5;
+            end
+        elseif clip_68_done == 5 then
+            if GetTotalTime() > clip_68_time_6 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_06");
+                clip_68_done = 6;
+            end
+        elseif clip_68_done == 6 then
+            if GetTotalTime() > clip_68_time_7 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_07");
+                clip_68_done = 7;
+            end
+        elseif clip_68_done == 7 then
+            if GetTotalTime() > clip_68_time_hit_3 then
+                local controller_sound = SoundPlay("S4_Imp_Bullet_Flesh_04");
+                clip_68_done = 77;
+            end
+        elseif clip_68_done == 77 then
+            if GetTotalTime() > clip_68_time_8 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_01");
+                clip_68_done = 8;
+            end
+        elseif clip_68_done == 8 then
+            if GetTotalTime() > clip_68_time_9 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_02");
+                clip_68_done = 9;
+            end
+        elseif clip_68_done == 9 then
+            if GetTotalTime() > clip_68_time_10 then
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_05");
+                clip_68_done = 10;
+            end
+        end 
+    end   
+end
+
+sounds_clip_74 = function()
+    local controller_sound = SoundPlay("S4_ZombieBG_Scott_23");
+end
+
+sounds_clip_76 = function()
+    local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_4");
+    clip_76_time = GetTotalTime() + 0.66;
+    clip_76_done = 0;   
+    Callback_OnPostUpdate:Add(sounds_clip_76_update);   
+end
+
+sounds_clip_76_update = function()
+    if clip_76_done == 0 then
+        if GetTotalTime() > clip_76_time then
+            local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_5");  
+            clip_76_done = 1;
+        end
+    end
+    
+end
+
+sounds_clip_77 = function()
+    local controller_sound = SoundPlay("S4_ZombieBG_Scott_1");
+    Callback_OnPostUpdate:Add(sounds_clip_78_update);   
+end
+
+sounds_clip_78 = function()
+    clip_78_click1 = 0;
+    clip_78_click2 = 0;
+    clip_78_time_click2 = GetTotalTime() + 0.66;
+    clip_78_start = 0;   
+end
+
+sounds_clip_78_update = function()
+    if clip_78_start == 0 then
+        if clip_78_click1 == 0 then
+            local controller_sound = SoundPlay("S4_SFX_Gun_Handle_ClickSlide_04");
+            clip_78_click1 = 1;
+        end
+        if clip_78_click2 == 0 and GetTotalTime() > clip_78_time_click2 then
+            local controller_sound = SoundPlay("S4_SFX_Gun_Handle_ClickSlide_04");
+            clip_78_click2 = 1;
+        end
+    end
 end
 
 
