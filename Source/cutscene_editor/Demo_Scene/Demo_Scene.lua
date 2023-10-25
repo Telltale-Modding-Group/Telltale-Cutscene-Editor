@@ -194,7 +194,7 @@ DemoScene = function()
     local flashlightTestLight_spot = AgentCreate("flashlightTestLight_spot", "module_env_light.prop", Vector(0,1.8,2), Vector(160, 0, 0), kScene, false, false)
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Type", 1, kScene) --0 point light, 1 spot light
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Intensity", 1, kScene)
-    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enlighten Intensity", 0, kScene)
+    Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Enlighten Intensity", 0, kScene) --season 1 and season 2 only
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Radius", 80, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Distance Falloff", 1, kScene)
     Custom_AgentSetProperty("flashlightTestLight_spot", "EnvLight - Spot Angle Inner", 10, kScene)
@@ -257,9 +257,28 @@ DemoScene = function()
     end
 
 
-    
-
-
+    for i = 1, 2 do 
+        local light_name = "flashlightTestLight_point_gun_" .. tostring(i);
+        local flashlightColor = RGBColor(255, 205, 0, 255)
+        local flashlightTestLight_point = AgentCreate(light_name, "module_env_light.prop", Vector(0,-1000,0), Vector(90, 0, 0), kScene, false, false)
+        Custom_AgentSetProperty(light_name, "EnvLight - Type", 0, kScene) --0 point light, 1 spot light
+        Custom_AgentSetProperty(light_name, "EnvLight - Intensity", 2.0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Enlighten Intensity", 0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Radius", 10, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Distance Falloff", 0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Spot Angle Inner", 10, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Spot Angle Outer", 40, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Color", flashlightColor, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Enabled Group", envlight_groupEnabled, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Groups", envlight_groups, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Shadow Type", 1, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Wrap", 0.0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Shadow Quality", 3, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - HBAO Participation Type", 1, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Shadow Near Clip", 0.0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Shadow Depth Bias", 0.0, kScene)
+        Custom_AgentSetProperty(light_name, "EnvLight - Mobility", 2, kScene) --lets the light to move around
+    end
 
     agent_gun_1 = AgentCreate("Rifle_1", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
     agent_gun_2 = AgentCreate("Rifle_2", "obj_gunAK47.prop", Vector(-0.56, 0.90, 0.11), Vector(90,0,-24), kScene, false, false)
@@ -283,6 +302,7 @@ DemoScene = function()
     
     clip_81_played_once = 0;
     clip_82_played_once = 0;
+    Callback_OnPostUpdate:Add(gun_light_update);
     
     
     --MODE_FREECAM = true;
@@ -307,15 +327,53 @@ DemoScene = function()
     CutscenePlayer("demo_cutscene", 65);
 
 
---;b,o,u,t,p,n,j
+
 
 end
 
 --custom functions
 
+
+gun_1_check = 0;
+gun_2_check = 0;
+gun_1_timer = 0;
+gun_2_timer = 0;
+
+gun_light = function(gun_number)
+    if gun_number == 1 then
+        local gun_pos = AgentGetWorldPos("Pistol_1");
+        Custom_SetAgentWorldPosition("flashlightTestLight_point_gun_1", gun_pos, kScene);
+        gun_1_timer = GetTotalTime()+0.05;
+        gun_1_check = 1;
+    else
+        local gun_pos = AgentGetWorldPos("Pistol_2");
+        Custom_SetAgentWorldPosition("flashlightTestLight_point_gun_2", gun_pos, kScene);
+        gun_2_timer = GetTotalTime()+0.05;
+        gun_2_check= 1;
+    end
+end
+
+gun_light_update = function()
+    if gun_1_check == 1 then
+        if GetTotalTime() > gun_1_timer then
+            Custom_SetAgentWorldPosition("flashlightTestLight_point_gun_1", Vector(0, -1000, 0), kScene);
+            gun_1_check = 0;
+        end
+    end
+
+    if gun_2_check == 1 then
+        if GetTotalTime() > gun_2_timer then
+            Custom_SetAgentWorldPosition("flashlightTestLight_point_gun_2", Vector(0, -1000, 0), kScene);
+            gun_2_check = 0;
+        end
+    end
+end
+
+
+
+
 persistent_data = {};
 persistent_data_check = {};
-
 
 path_1 = function()
     
@@ -718,6 +776,7 @@ shot_clip_85_update= function()
     if clip_85_done == 0 then
         if GetTotalTime() > clip_85_time then
             clem_animation_clip_85_controller = PlayAnimation("Clementine", "sk61_javierStandAAimPistol_fire_add");
+            gun_light(2);
             local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_1");
             ControllerSetLooping(clem_animation_clip_85_controller , false); 
             clip_85_done = 1;
@@ -757,67 +816,81 @@ sounds_clip_68_update = function()
     if clip_68_done ~= 10 then
         if clip_68_done == 0 then
             if GetTotalTime() > clip_68_time then
-                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_01");
+                local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_2");
+                gun_light(2);
                 clip_68_done = 1;
             end
         elseif clip_68_done == 1 then
             if GetTotalTime() > clip_68_time_2 then
-                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_02");
+                local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_1");
+                gun_light(2);
                 clip_68_done = 2;
             end
         elseif clip_68_done == 2 then
             if GetTotalTime() > clip_68_time_hit then
-                local controller_sound = SoundPlay("S4_Imp_Bullet_Flesh_02");
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_03");
+                gun_light(1);
                 clip_68_done = 22;
             end
         elseif clip_68_done == 22 then
             if GetTotalTime() > clip_68_time_3 then
-                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_03");
+                local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_3");
+                gun_light(2);
                 clip_68_done = 3;
             end
         elseif clip_68_done == 3 then
             if GetTotalTime() > clip_68_time_hit_2 then
-                local controller_sound = SoundPlay("S4_Imp_Bullet_Flesh_03");
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_01");
+                gun_light(1);
                 clip_68_done = 33;
             end
         elseif clip_68_done == 33 then
             if GetTotalTime() > clip_68_time_4 then
-                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_04");
+                local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_1");
+                gun_light(2);
                 clip_68_done = 4;
             end
         elseif clip_68_done == 4 then
             if GetTotalTime() > clip_68_time_5 then
                 local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_05");
+                gun_light(1);
                 clip_68_done = 5;
             end
         elseif clip_68_done == 5 then
             if GetTotalTime() > clip_68_time_6 then
                 local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_06");
+                gun_light(1);
                 clip_68_done = 6;
             end
         elseif clip_68_done == 6 then
             if GetTotalTime() > clip_68_time_7 then
-                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_07");
+                local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_4");
+                gun_light(2);
                 clip_68_done = 7;
             end
         elseif clip_68_done == 7 then
             if GetTotalTime() > clip_68_time_hit_3 then
-                local controller_sound = SoundPlay("S4_Imp_Bullet_Flesh_04");
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_04");
+                gun_light(1);
                 clip_68_done = 77;
             end
         elseif clip_68_done == 77 then
             if GetTotalTime() > clip_68_time_8 then
-                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_01");
+                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_07");
+                gun_light(1);
                 clip_68_done = 8;
             end
         elseif clip_68_done == 8 then
             if GetTotalTime() > clip_68_time_9 then
                 local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_02");
+                gun_light(1);
+
                 clip_68_done = 9;
             end
         elseif clip_68_done == 9 then
             if GetTotalTime() > clip_68_time_10 then
-                local controller_sound = SoundPlay("S4_GUN_Shot_Pistol_1911_Int_05");
+                local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_5");
+                gun_light(2);
                 clip_68_done = 10;
             end
         end 
@@ -830,6 +903,7 @@ end
 
 sounds_clip_76 = function()
     local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_4");
+    gun_light(2);
     clip_76_time = GetTotalTime() + 0.66;
     clip_76_done = 0;   
     Callback_OnPostUpdate:Add(sounds_clip_76_update);   
@@ -838,6 +912,7 @@ end
 sounds_clip_76_update = function()
     if clip_76_done == 0 then
         if GetTotalTime() > clip_76_time then
+            gun_light(2);
             local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_5");  
             clip_76_done = 1;
         end
