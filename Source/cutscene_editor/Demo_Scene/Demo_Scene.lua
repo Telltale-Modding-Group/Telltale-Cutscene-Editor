@@ -323,8 +323,8 @@ DemoScene = function()
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
     --CutscenePlayer("demo_cutscene", 0);
-    --CutscenePlayer("demo_cutscene", 84);
-    CutscenePlayer("demo_cutscene", 65);
+    CutscenePlayer("demo_cutscene", 80);
+    --CutscenePlayer("demo_cutscene", 65);
 
 
 
@@ -944,6 +944,113 @@ sounds_clip_78_update = function()
         end
     end
 end
+
+--mood manager
+
+moods = function()
+    mood_clip = 0;
+    Callback_OnPostUpdate:Add(moods_update);
+end
+
+moods_update = function()
+
+        --pcall(ControllerKill, mood_clem)
+
+            --mood_clem = PlayAnimation("Clementine", "");
+            --ControllerSetLooping(mood_clem , true); 
+            --ControllerSetContribution(mood_clem, 0.6);
+
+            --mood_javi = PlayAnimation("Javier", "");
+            --ControllerSetLooping(mood_javi , true); 
+            --ControllerSetContribution(mood_javi, 0.6);
+
+            --mood_mari = PlayAnimation("Mariana", "");
+            --ControllerSetLooping(mood_mari , true); 
+            --ControllerSetContribution(mood_mari, 0.6);
+
+            --mood_gabe = PlayAnimation("Gabe", "");
+            --ControllerSetLooping(mood_gabe , true); 
+            --ControllerSetContribution(mood_gabe, 0.6);
+    if player_clip ~= mood_clip then
+        mood_clip = player_clip;
+        pcall(ControllerKill, mood_clem)
+        pcall(ControllerKill, mood_javi)
+        pcall(ControllerKill, mood_mari)
+        pcall(ControllerKill, mood_gabe)
+
+        if player_clip == 7 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodShockA");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        elseif player_clip == 26 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryA");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        elseif player_clip == 27 then
+            mood_mari = PlayAnimation("Mariana", "clementine_face_moodWorryA");
+            ControllerSetLooping(mood_mari , true);
+            ControllerSetContribution(mood_mari, 0.6); 
+        elseif player_clip == 28 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryB");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        elseif player_clip == 30 then
+            mood_javi = PlayAnimation("Javier", "javier_face_moodSternA");
+            ControllerSetLooping(mood_javi , true); 
+            ControllerSetContribution(mood_javi, 0.6);
+        elseif player_clip == 31 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryC");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        --elseif player_clip == 33 then
+        --    mood_javi = PlayAnimation("Javier", "javier_face_moodSternB");
+        --    ControllerSetLooping(mood_javi , true); 
+        --    ControllerSetContribution(mood_javi, 0.6);
+        elseif player_clip == 35 then
+            mood_javi = PlayAnimation("Javier", "javier_face_moodAngryE");
+            ControllerSetLooping(mood_javi , true); 
+            ControllerSetContribution(mood_javi, 0.6);
+        elseif player_clip == 62 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodDoubtA");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        elseif player_clip == 63 then
+            mood_mari = PlayAnimation("Mariana", "clementine_face_moodThinkA");
+            ControllerSetLooping(mood_mari , true); 
+            ControllerSetContribution(mood_mari, 0.6);
+        elseif player_clip == 64 then
+            mood_clem = PlayAnimation("Clementine", "clementine_face_moodFearB");
+            ControllerSetLooping(mood_clem , true); 
+            ControllerSetContribution(mood_clem, 0.6);
+        elseif player_clip == 65 then
+            mood_javi = PlayAnimation("Javier", "javier_face_moodWorryBX");
+            ControllerSetLooping(mood_javi , true); 
+            ControllerSetContribution(mood_javi, 0.6);
+        elseif player_clip == 70 then
+            mood_mari = PlayAnimation("Mariana", "clementine_face_moodWorryB");
+            ControllerSetLooping(mood_mari , true); 
+            ControllerSetContribution(mood_mari, 0.6);
+        elseif player_clip == 75 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodFearC");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+            mood_mari = PlayAnimation("Mariana", "clementine_face_moodFearA");
+            ControllerSetLooping(mood_mari , true); 
+            ControllerSetContribution(mood_mari, 0.6);
+        elseif player_clip == 79 then
+            mood_javi = PlayAnimation("Javier", "javier_face_moodPainC");
+            ControllerSetLooping(mood_javi , true); 
+            ControllerSetContribution(mood_javi, 0.6);
+
+        end
+    
+    end
+
+
+
+
+end
+
 
 
 --open the scene with this script
