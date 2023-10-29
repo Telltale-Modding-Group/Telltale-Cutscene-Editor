@@ -8,6 +8,6 @@
     "name": "Cutscene Editor",
     "version": "1.0",
     "author": "Mawrak",
-    "priority": 30
+    "priority": 1100
   }
 }

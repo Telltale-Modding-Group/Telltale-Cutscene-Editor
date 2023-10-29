@@ -322,8 +322,8 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    --CutscenePlayer("demo_cutscene", 0);
-    CutscenePlayer("demo_cutscene", 80);
+    CutscenePlayer("demo_cutscene", 0);
+    --CutscenePlayer("demo_cutscene", 80);
     --CutscenePlayer("demo_cutscene", 65);
 
 
@@ -744,6 +744,7 @@ snd_clip_82_update = function()
     if clip_82_done == 0 then
         if GetTotalTime() > clip_82_time then
             local controller_sound = SoundPlay("a371257243");
+            local controller_sound = SoundPlay("S2_gore_eating4");
             clip_82_done = 1;
         end
     end
