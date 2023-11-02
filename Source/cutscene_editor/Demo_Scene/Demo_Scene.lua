@@ -322,9 +322,9 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    CutscenePlayer("demo_cutscene", 0);
-    --CutscenePlayer("demo_cutscene", 80);
-    --CutscenePlayer("demo_cutscene", 65);
+    CutscenePlayer("demo_cutscene", 0, 0);
+    --CutscenePlayer("demo_cutscene", 80, 0);
+    --CutscenePlayer("demo_cutscene", 65, 0);
 
 
 
@@ -949,6 +949,16 @@ end
 --mood manager
 
 moods = function()
+
+    controller_amb = SoundPlay("S3_AMB_Richmond_Alley_Dusk");
+    ControllerSetLooping(controller_amb, true);
+    ControllerSetSoundVolume(controller_amb, 0.3);
+    ControllerFadeIn(controller_amb, 2.0);
+
+    controller_music1 = SoundPlay("music1_mus_loop_Hopeful_02");
+    ControllerSetSoundVolume(controller_music1, 0.3);
+    
+
     mood_clip = 0;
     Callback_OnPostUpdate:Add(moods_update);
 end

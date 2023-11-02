@@ -96,7 +96,7 @@ end
 
 
 
-CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
+CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from, dialogue_mode_number)
     
     player_name_of_the_cutscene = name_of_the_cutscene;
     local player_cutscene_names_path = "Custom_Cutscenes/" .. player_name_of_the_cutscene .."/player.ini";
@@ -108,6 +108,10 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
     player_n_n = #(player_agents_data.agents_names);
     
     player_clip = clip_to_start_from;
+    
+    dialogue_mode = dialogue_mode_number; --0 = S1, 1 = S2-S4, only for fullscreen 16:9.
+    dialogue_mode_at_start = dialogue_mode_number; -- for dynamic checks
+    dialogue_mode_option = 1;
 
 
     player_Dummy_array = {}
@@ -283,7 +287,7 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from)
     SwitchDelay = 0;
 
 
-
+    SwitchDelay_2 = 0; --for dialogue scroll
 
 
     Callback_OnPostUpdate:Add(CutscenePlayerUpdate);
@@ -604,29 +608,109 @@ CutscenePlayerUpdate = function()
         --    correction_x = 1;
         --end
 
+        
+        
+
+
+
         local bool_isOverChoice1 = KTBM_TextUI_IsCursorOverBounds(Vector(0.31, 0.7, 0), Vector(-0.183, -0.06, 0), Vector(0.183, 0.06, 0));
         local bool_isOverChoice2 = KTBM_TextUI_IsCursorOverBounds(Vector(0.69, 0.7, 0), Vector(-0.183, -0.06, 0), Vector(0.183, 0.06, 0));
         local bool_isOverChoice3 = KTBM_TextUI_IsCursorOverBounds(Vector(0.31, 0.83, 0), Vector(-0.183, -0.06, 0), Vector(0.183, 0.06, 0));
         local bool_isOverChoice4 = KTBM_TextUI_IsCursorOverBounds(Vector(0.69, 0.83, 0), Vector(-0.183, -0.06, 0), Vector(0.183, 0.06, 0));
         
-        
-        if Custom_InputKeyPress(1) and GetTotalTime() > SwitchDelay then
-            if bool_isOverChoice1 and player_cutscene_data[player_clip].choices > 0 then
-                --TextSet(agent_debug_boundary_1, "DETECTION! 1"); --debug
-                chosen_text = 1;
-            elseif bool_isOverChoice2 and player_cutscene_data[player_clip].choices > 1 then
-                --TextSet(agent_choice_ui_text_2, "DETECTION! 2"); --debug
-                chosen_text = 2;
-            elseif bool_isOverChoice3 and player_cutscene_data[player_clip].choices > 2 then
-                --TextSet(agent_choice_ui_text_3, "DETECTION! 3"); --debug
-                chosen_text = 3;
-            elseif bool_isOverChoice4 and player_cutscene_data[player_clip].choices > 3 then
-                --TextSet(agent_choice_ui_text_4, "DETECTION! 4"); --debug
-                chosen_text = 4;
+        if dialogue_mode == 0 then
+            if player_cutscene_data[player_clip].choices > 0 then
+                if (Custom_InputKeyPress(83) or Custom_InputKeyPress(40)) and GetTotalTime() > SwitchDelay_2 then --move down, arrow key or s
+                    dialogue_mode_option = dialogue_mode_option+1;
+
+                    if dialogue_mode_option > player_cutscene_data[player_clip].choices then
+                        dialogue_mode_option = player_cutscene_data[player_clip].choices;
+                    end
+
+                    if dialogue_mode_option == 1 then
+                        TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 1.0));
+                        TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 0.3));
+                    elseif dialogue_mode_option == 2 then
+                        TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 1.0));
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 0.3));
+                    elseif dialogue_mode_option == 3 then
+                        TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 1.0));
+                        TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 0.3));
+                    elseif dialogue_mode_option == 4 then
+                        TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 1.0));
+                    end
+                    SwitchDelay_2 = GetTotalTime() + 0.15;
+                elseif (Custom_InputKeyPress(87) or Custom_InputKeyPress(38)) and GetTotalTime() > SwitchDelay_2 then --move up, arrow key or w
+                    dialogue_mode_option = dialogue_mode_option-1;
+
+                    if dialogue_mode_option < 1 then
+                        dialogue_mode_option = 1;
+                    end
+                    if dialogue_mode_option == 1 then
+                        TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 1.0));
+                        TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 0.3));
+                    elseif dialogue_mode_option == 2 then
+                        TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 1.0));
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 0.3));
+                    elseif dialogue_mode_option == 3 then
+                        TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 1.0));
+                        TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 0.3));
+                    elseif dialogue_mode_option == 4 then
+                        TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 0.3));
+                        TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 1.0));
+                    end
+                    SwitchDelay_2 = GetTotalTime() + 0.15;
+                end
+            
+                
+                if Custom_InputKeyPress(1) and GetTotalTime() > SwitchDelay  then
+                    if dialogue_mode_option == 1 then
+                        chosen_text = 1;
+                    elseif dialogue_mode_option == 2 then
+                        chosen_text = 2;
+                    elseif dialogue_mode_option == 3 then
+                        chosen_text = 3;
+                    elseif dialogue_mode_option == 4 then
+                        chosen_text = 4;
+                    end
+                    SwitchDelay = GetTotalTime() + 0.3;
+                end
             end
-            SwitchDelay = GetTotalTime() + 0.3;
+        else
+            if Custom_InputKeyPress(1) and GetTotalTime() > SwitchDelay then
+                if bool_isOverChoice1 and player_cutscene_data[player_clip].choices > 0 then
+                    --TextSet(agent_debug_boundary_1, "DETECTION! 1"); --debug
+                    chosen_text = 1;
+                elseif bool_isOverChoice2 and player_cutscene_data[player_clip].choices > 1 then
+                    --TextSet(agent_choice_ui_text_2, "DETECTION! 2"); --debug
+                    chosen_text = 2;
+                elseif bool_isOverChoice3 and player_cutscene_data[player_clip].choices > 2 then
+                    --TextSet(agent_choice_ui_text_3, "DETECTION! 3"); --debug
+                    chosen_text = 3;
+                elseif bool_isOverChoice4 and player_cutscene_data[player_clip].choices > 3 then
+                    --TextSet(agent_choice_ui_text_4, "DETECTION! 4"); --debug
+                    chosen_text = 4;
+                end
+                SwitchDelay = GetTotalTime() + 0.3;
+            end
         end
-        
         
         --local propertySet_agentProperties = AgentGetRuntimeProperties(agent_choice_ui_1);
         --local vector_extentsMin = PropertyGet(propertySet_agentProperties, "Extents Min");
@@ -672,7 +756,6 @@ CutscenePlayerUpdate = function()
         --choice UI
 
 
-        --if player_cutscene_data[player_clip].choices == 0 then
             Custom_SetAgentPosition("agent_choice_ui_1", Vector(5,-3,-1000), Custom_CutsceneDev_SceneObject)
             Custom_SetAgentPosition("agent_choice_ui_2", Vector(5,-3,-1000), Custom_CutsceneDev_SceneObject)
             Custom_SetAgentPosition("agent_choice_ui_3", Vector(5,-3,-1000), Custom_CutsceneDev_SceneObject)
@@ -687,6 +770,8 @@ CutscenePlayerUpdate = function()
 
         --calculations for text size
 
+
+        --for dialogue_mode == 1
         --for left texts (1 and 3)
 
         --x = 4.9 for 1 symbol
@@ -702,56 +787,110 @@ CutscenePlayerUpdate = function()
         --x = -0.4 for maximum - most left
 
 
-        if player_cutscene_data[player_clip].choices > 0 then
-            Custom_SetAgentPosition("agent_choice_ui_1", Vector(5,-3,22), Custom_CutsceneDev_SceneObject)
-            TextSet(agent_choice_ui_text_1, player_cutscene_data[player_clip].choice1_text);
 
-            
-            local choice_text_length = 4.9 + ((string.len(player_cutscene_data[player_clip].choice1_text)-1)*0.08);
-            if choice_text_length > 9.2 then
-                choice_text_length = 9.2
-            end
-            Custom_SetAgentPosition("agent_choice_ui_text_1", Vector(choice_text_length,-2.71,21), Custom_CutsceneDev_SceneObject)
-            
-            if player_cutscene_data[player_clip].choices > 1 then
-                Custom_SetAgentPosition("agent_choice_ui_2", Vector(-5,-3,22), Custom_CutsceneDev_SceneObject)
-                TextSet(agent_choice_ui_text_2, player_cutscene_data[player_clip].choice2_text);
-                
-                local choice_text_length = -4.7 + ((string.len(player_cutscene_data[player_clip].choice2_text)-1)*0.08);
-                if choice_text_length > -0.4 then
-                        choice_text_length = -0.4
-                end
-                Custom_SetAgentPosition("agent_choice_ui_text_2", Vector(choice_text_length,-2.71,21), Custom_CutsceneDev_SceneObject)
+        --for dialogue_mode == 0
+        --its 0.2 for start and 4.5 for max
 
-                if player_cutscene_data[player_clip].choices > 2 then
-                    Custom_SetAgentPosition("agent_choice_ui_3", Vector(5,-5,22), Custom_CutsceneDev_SceneObject)
-                    TextSet(agent_choice_ui_text_3, player_cutscene_data[player_clip].choice3_text);
-                    
-                    
-                    local choice_text_length = 4.9 + ((string.len(player_cutscene_data[player_clip].choice3_text)-1)*0.08);
-                    if choice_text_length > 9.2 then
-                        choice_text_length = 9.2
-                    end
-                    Custom_SetAgentPosition("agent_choice_ui_text_3", Vector(choice_text_length,-4.65,21), Custom_CutsceneDev_SceneObject)
-
-
-                    if player_cutscene_data[player_clip].choices > 3 then
-                        Custom_SetAgentPosition("agent_choice_ui_4", Vector(-5,-5,22), Custom_CutsceneDev_SceneObject)
-                        TextSet(agent_choice_ui_text_4, player_cutscene_data[player_clip].choice4_text);
-                    
-                        local choice_text_length = -4.7 + ((string.len(player_cutscene_data[player_clip].choice4_text)-1)*0.08);
-                        if choice_text_length > -0.4 then
-                            choice_text_length = -0.4
-                        end
-                        Custom_SetAgentPosition("agent_choice_ui_text_4", Vector(choice_text_length,-4.65,21), Custom_CutsceneDev_SceneObject)
-                    end
-                end
-            end
-            TextSet(agent_choice_ui_timer, "––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
+        if RenderGetScreenResolution().x ~= 1920 or RenderGetScreenResolution().y ~= 1080 then --dynamic check
+            dialogue_mode = 0;
+        elseif dialogue_mode_at_start == 1 then
+            dialogue_mode = 1;
         end
 
+        if dialogue_mode == 0 then
+            if player_cutscene_data[player_clip].choices > 0 then
+            
+                TextSet(agent_choice_ui_text_1, player_cutscene_data[player_clip].choice1_text);
+                local choice_text_length = 0.2 + ((string.len(player_cutscene_data[player_clip].choice1_text)-1)*0.08);
+                
+                
+                Custom_SetAgentPosition("agent_choice_ui_text_1", Vector(choice_text_length,-2.71,21), Custom_CutsceneDev_SceneObject)
+                TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 1.0));
+                if player_cutscene_data[player_clip].choices > 1 then
+                    
+                    TextSet(agent_choice_ui_text_2, player_cutscene_data[player_clip].choice2_text);
+                    
+                    local choice_text_length = 0.2 + ((string.len(player_cutscene_data[player_clip].choice2_text)-1)*0.08);
+                    
+                    Custom_SetAgentPosition("agent_choice_ui_text_2", Vector(choice_text_length,-3.356,21), Custom_CutsceneDev_SceneObject)
+                    TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 0.3));
+                    if player_cutscene_data[player_clip].choices > 2 then
+                        
+                        TextSet(agent_choice_ui_text_3, player_cutscene_data[player_clip].choice3_text);
+                        
+                        
+                        local choice_text_length = 0.2 + ((string.len(player_cutscene_data[player_clip].choice3_text)-1)*0.08);
+                        
+                        Custom_SetAgentPosition("agent_choice_ui_text_3", Vector(choice_text_length,-4.002,21), Custom_CutsceneDev_SceneObject)
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 0.3));
+                        if player_cutscene_data[player_clip].choices > 3 then
+                            
+                            TextSet(agent_choice_ui_text_4, player_cutscene_data[player_clip].choice4_text);
+                        
+                            local choice_text_length = 0.2 + ((string.len(player_cutscene_data[player_clip].choice4_text)-1)*0.08);
+                            
+                            Custom_SetAgentPosition("agent_choice_ui_text_4", Vector(choice_text_length,-4.65,21), Custom_CutsceneDev_SceneObject)
+                            TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 0.3));
+                        end
+                    end--1.85
+                end
+            
 
+            TextSet(agent_choice_ui_timer, "––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
+            end
 
+        else
+
+            if player_cutscene_data[player_clip].choices > 0 then
+                Custom_SetAgentPosition("agent_choice_ui_1", Vector(5,-3,22), Custom_CutsceneDev_SceneObject)
+                TextSet(agent_choice_ui_text_1, player_cutscene_data[player_clip].choice1_text);
+
+                
+                local choice_text_length = 4.9 + ((string.len(player_cutscene_data[player_clip].choice1_text)-1)*0.08);
+                if choice_text_length > 9.2 then
+                    choice_text_length = 9.2
+                end
+                Custom_SetAgentPosition("agent_choice_ui_text_1", Vector(choice_text_length,-2.71,21), Custom_CutsceneDev_SceneObject)
+                TextSetColor("agent_choice_ui_text_1", Color(1.0, 1.0, 1.0, 1.0));
+                if player_cutscene_data[player_clip].choices > 1 then
+                    Custom_SetAgentPosition("agent_choice_ui_2", Vector(-5,-3,22), Custom_CutsceneDev_SceneObject)
+                    TextSet(agent_choice_ui_text_2, player_cutscene_data[player_clip].choice2_text);
+                    
+                    local choice_text_length = -4.7 + ((string.len(player_cutscene_data[player_clip].choice2_text)-1)*0.08);
+                    if choice_text_length > -0.4 then
+                            choice_text_length = -0.4
+                    end
+                    Custom_SetAgentPosition("agent_choice_ui_text_2", Vector(choice_text_length,-2.71,21), Custom_CutsceneDev_SceneObject)
+                    TextSetColor("agent_choice_ui_text_2", Color(1.0, 1.0, 1.0, 1.0));
+                    if player_cutscene_data[player_clip].choices > 2 then
+                        Custom_SetAgentPosition("agent_choice_ui_3", Vector(5,-5,22), Custom_CutsceneDev_SceneObject)
+                        TextSet(agent_choice_ui_text_3, player_cutscene_data[player_clip].choice3_text);
+                        
+                        
+                        local choice_text_length = 4.9 + ((string.len(player_cutscene_data[player_clip].choice3_text)-1)*0.08);
+                        if choice_text_length > 9.2 then
+                            choice_text_length = 9.2
+                        end
+                        Custom_SetAgentPosition("agent_choice_ui_text_3", Vector(choice_text_length,-4.65,21), Custom_CutsceneDev_SceneObject)
+                        TextSetColor("agent_choice_ui_text_3", Color(1.0, 1.0, 1.0, 1.0));
+                        if player_cutscene_data[player_clip].choices > 3 then
+                            Custom_SetAgentPosition("agent_choice_ui_4", Vector(-5,-5,22), Custom_CutsceneDev_SceneObject)
+                            TextSet(agent_choice_ui_text_4, player_cutscene_data[player_clip].choice4_text);
+                        
+                            local choice_text_length = -4.7 + ((string.len(player_cutscene_data[player_clip].choice4_text)-1)*0.08);
+                            if choice_text_length > -0.4 then
+                                choice_text_length = -0.4
+                            end
+                            Custom_SetAgentPosition("agent_choice_ui_text_4", Vector(choice_text_length,-4.65,21), Custom_CutsceneDev_SceneObject)
+                            TextSetColor("agent_choice_ui_text_4", Color(1.0, 1.0, 1.0, 1.0));
+                        end
+                    end
+                end
+                TextSet(agent_choice_ui_timer, "––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
+            end
+        end
+
+        dialogue_mode_option = 1; -- for dialogue_mode == 0
 
 
 
