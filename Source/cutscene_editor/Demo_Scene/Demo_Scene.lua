@@ -1,41 +1,3 @@
---[[
--------------------------------------------------------------------------
-This script is the main level script for the cutscene.
-It also contains the main logic in here that I created for doing a cutscene.
-
-It's worth noting for this ctuscene script, it is bascially implemented in its own completely original level, and not an existing level script.
-Granted, you can still implement this kind of cutscene logic into an existing level script, however for the sake of exploration and simplicity I created my own.
-
-The basic process of making/creating a cutscene goes something like this.
-- Take an existing TWD level (preferably something close to what is intended).
-- Completely strip all of the agents in the original scene that we don't need.
-- Instantiate our own agents into the scene (those can be enviorment assets, characters, objects, etc.)
-- Setup our cutscene content (cameras, angles, sequence clips, audio, etc.)
-- Finally, we have update functions where we programmatically create and do things during the cutscene (camera work, acting)
-
-Is there are better way to do this? If you are telltale dev yes... 
-But we are not and don't have your chore editor... so we have to make do with lua scripting at the moment.
-
-CUTSCENE SYSTEM EXPLANATION
-For sequencing I have a basic psudeo timeline objects. 
-You will see those in the script and they go by the names of [sequence_clips] and [sequence_cameraAngles].
-There are a few more but to elaborate on but I'll go over how this sequencing system works. 
-Also worth noting that we don't have a chore editor yet, so have to make do with lua scripting at the moment.
-
-1. For the sequencing we have a time sequence value variable that gets incremented 1 every single frame. - (could I have actually grabbed the game time? yes, that does exist however I did it this way first and it worked... in a newer version of this psudeo system I will definetly try to attempt to use it)
-2. This time sequence variable is [sequence_currentTimer] and it basically acts as our psudeo playhead. - (but not quite with the way I coded it and you'll see later)
-3. [sequence_clips] contains an array of clip objects, these will be accessed sequentially as the scene goes on.
-4. [sequence_cameraAngles] contains an array of camera angle objects.
-5. The camera angles are referenced by the sequence clips by the variable [angleIndex] inside the clip object. - (normally I geuss you would include this camera data inside the clip object, however I kept it seperate because we often in cinema cut back to shots thta have these angles)
-6. For the current clip that we are on, the object also has a [shotDuration] field which obviously tells us how long the shot will last.
-7. When the playhead value [sequence_currentTimer] reaches the end of the current clip [shotDuration].
-8. we then move on to the next shot in the sequence by incrementing [sequence_currentShotIndex] and by also resetting [sequence_currentTimer] back to zero. - (Yes, you could change it so [sequence_currentTimer] keeps counting as the game goes on, or again also use the actual game time value which we have access to, but this is the way I did it first :P but also didn't really want to deal with very long numbers)
-9. when we do that, now our current clip is the next shot in the sequence, and this cycle repeats until the sequence effectively ends.
-]]--
-
---include our custom scripts/extensions
---these scripts contain a ton of functionality and useful functions to make things easier for us.
-
 require("FCM_Utilities.lua");
 require("FCM_AgentExtensions.lua");
 require("FCM_Color.lua");
@@ -55,28 +17,20 @@ require("CutscenePlayer.lua");
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 
 --main level variables
-local kScript = "DemoScene"; --(the name of this script and also the name of the level function at the bottom of the script, which will be called as soon as this scene opens)
+local kScript = "DemoScene"; --(the name of the level function which will be called as soon as this scene opens)
 local kScene = "adv_richmondStreet"; --(the name of the scene asset file)
-local agent_name_scene = "adv_richmondStreet.scene"; --(this is the name of the scene agent object, using it to set post processing effects later)
-
-
-
+local agent_name_scene = "adv_richmondStreet.scene"; --(the name of the scene agent object)
 
 --cutscene development variables variables (these are variables required by the development scripts)
 Custom_CutsceneDev_SceneObject = kScene; --dont touch (the development scripts need to reference the main level)
 Custom_CutsceneDev_SceneObjectAgentName = agent_name_scene; --dont touch (the development scripts also need to reference the name of the scene agent)
 Custom_CutsceneDev_UseSeasonOneAPI = false; --dont touch (this is leftover but if the development tools were implemented inside season 1 we need to use the S1 functions because the api changes)
-Custom_CutsceneDev_FreecamUseFOVScale = false; --changes the camera zooming from modifing the FOV directly, to modifying just the FOV scalar (only useful if for some reason the main field of view property is chorelocked or something like that)
-
-
+Custom_CutsceneDev_FreecamUseFOVScale = false; --dont touch (changes the camera zooming from modifing the FOV directly, to modifying just the FOV scalar (only useful if for some reason the main field of view property is chorelocked or something like that))
 
 --cutscene variables
-local MODE_FREECAM = false; --enable freecam rather than the cutscene camera
+local MODE_FREECAM = false; --enable freecam rather than the cutscene camera (better leave this as false and change in the main function itself)
 agent_name_cutsceneCamera = "myCutsceneCamera"; --cutscene camera agent name
 agent_name_cutsceneCameraParent = "myCutsceneCameraParent"; --cutscene camera parent agent name
-
-
-
 
 --hides the cursor in game
 HideCusorInGame = function()
@@ -87,10 +41,8 @@ end
 --|||||||||||||||||||||||||||||||||||||||||||||| CUTSCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CUTSCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CUTSCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
---now starting to get into the actual juice...
---this section contains a bunch of setup functions that are basically here to get things ready for use when we need them during the actual cutscene itself.
 
---creates a camera that will be used for the cutscene (yes usually you create multiple but I haven't wrapped my head around how your camera layer stack system works telltale!)
+
 Cutscene_CreateCutsceneCamera = function()
     --generic camera prop (prefab) asset
     local cam_prop = "module_camera.prop";
@@ -104,18 +56,8 @@ Cutscene_CreateCutsceneCamera = function()
     local cameraParentAgent = AgentCreate(agent_name_cutsceneCameraParent, "group.prop", newPosition, newRotation, kScene, false, false);
 
     AgentAttach(cameraAgent, cameraParentAgent);
-    --AgentSetPos(cameraAgent, Vector(0,0,0));
-    --AgentSetRot(cameraAgent, Vector(0,0,0));
 
-
-    --Custom_SetAgentWorldPosition(agent_name_cutsceneCameraParent , Vector(-3.609,1.401,-4.179), kScene);
-    --Custom_SetAgentWorldRotation(agent_name_cutsceneCameraParent , Vector(5.166,160.948,0), kScene);
-
-
-    --AgentSetPos(cameraAgent, Vector(-3.609,1.401,-4.179));
-    --AgentSetRot(cameraAgent, Vector(5.166,160.948,0));
-    
-    --set the clipping planes of the camera (in plain english, how close the camera can see objects, and how far the camera can see)
+    --set the clipping planes of the camera (how close the camera can see objects, and how far the camera can see)
     --if the near is set too high we start loosing objects in the foreground.
     --if the far is set to low we will only see part or no skybox at all
     Custom_AgentSetProperty(agent_name_cutsceneCamera, "Clip Plane - Far", 2500, kScene);
@@ -128,32 +70,12 @@ Cutscene_CreateCutsceneCamera = function()
     CameraPush(agent_name_cutsceneCamera);
 end
 
---sets up our cutscene objects
-Cutscene_SetupCutsceneContent = function()
-    --find the character objects in the scene, we are going to need them during the cutscene so we need to get them (you could also get them during update but that wouldn't be performance friendly)
-
-
-end
-
-
-
-
-
---'ControllerStop' or ControllerPause; ControllerIsPlaying; AnimationGetLength("animation.anm"); AgentDuplicate
-
---|||||||||||||||||||||||||||||||||||||||||||||| CUTSCENE UPDATE ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| CUTSCENE UPDATE ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| CUTSCENE UPDATE ||||||||||||||||||||||||||||||||||||||||||||||
-
-
-
 
 --main level script, this function gets called when the scene loads
---its important we call everything here and set up everything so our work doesn't go to waste
+
 DemoScene = function()
-    ---debug
-
-
+   
+    --loading resources from all episodes of Season 3 (loading cross-season resources this way is not recommended and may break the scene)
     ResourceSetEnable("ProjectSeason3");
     ResourceSetEnable("WalkingDead301");
     ResourceSetEnable("WalkingDead302");
@@ -169,7 +91,6 @@ DemoScene = function()
     agent_anf_3 = AgentCreate("Roxanne", "sk62_roxanne.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
 
 
-
     agent_zombie_1 = AgentCreate("Zombie_1", "sk61_zombie.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     agent_zombie_2 = AgentCreate("Zombie_2", "sk61_zombieBulldozered.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     agent_zombie_3 = AgentCreate("Zombie_3", "sk61_zombieCracked.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
@@ -178,7 +99,7 @@ DemoScene = function()
     agent_zombie_6 = AgentCreate("Zombie_6", "sk61_zombie.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     agent_zombie_7 = AgentCreate("Zombie_7", "sk61_zombieFaceless.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
 
-
+    
     Custom_SetAgentWorldPosition("Tripp", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Kate", Vector(0, -1000, 0), kScene);
     Custom_SetAgentWorldPosition("Conrad", Vector(0, -1000, 0), kScene);
@@ -319,17 +240,26 @@ DemoScene = function()
         Callback_OnPostUpdate:Add(Custom_CutsceneDev_UpdateCutsceneTools_Input);
         Callback_OnPostUpdate:Add(Custom_CutsceneDev_UpdateCutsceneTools_Main);
     end
+    
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
     CutscenePlayer("demo_cutscene", 0, 0);
-    --CutscenePlayer("demo_cutscene", 80, 0);
-    --CutscenePlayer("demo_cutscene", 65, 0);
+    --CutscenePlayer("demo_cutscene", 63, 0);
 
 
 
 
 end
+
+
+
+
+
+
+
+
+
 
 --custom functions
 
@@ -375,9 +305,107 @@ end
 persistent_data = {};
 persistent_data_check = {};
 
+
+--mood manager
+
+moods = function()
+
+    controller_amb = SoundPlay("S3_AMB_Richmond_Alley_Dusk");
+    ControllerSetLooping(controller_amb, true);
+    ControllerSetSoundVolume(controller_amb, 0.3);
+    ControllerFadeIn(controller_amb, 2.0);
+
+    controller_music1 = SoundPlay("music1_mus_loop_Neutral_21");
+    ControllerSetSoundVolume(controller_music1, 0.3);
+    
+
+    mood_clip = 0;
+    Callback_OnPostUpdate:Add(moods_update);
+end
+
+moods_update = function()
+    if player_clip ~= mood_clip then
+        mood_clip = player_clip;
+        pcall(ControllerKill, mood_clem)
+        pcall(ControllerKill, mood_javi)
+        pcall(ControllerKill, mood_mari)
+        pcall(ControllerKill, mood_gabe)
+
+        if player_clip == 7 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodShockA");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        elseif player_clip == 26 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryA");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        elseif player_clip == 27 then
+            mood_mari = PlayAnimation("Mariana", "clementine_face_moodWorryA");
+            ControllerSetLooping(mood_mari , true);
+            ControllerSetContribution(mood_mari, 0.6); 
+        elseif player_clip == 28 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryB");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        elseif player_clip == 30 then
+            mood_javi = PlayAnimation("Javier", "javier_face_moodSternA");
+            ControllerSetLooping(mood_javi , true); 
+            ControllerSetContribution(mood_javi, 0.6);
+        elseif player_clip == 31 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryC");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        --elseif player_clip == 33 then
+        --    mood_javi = PlayAnimation("Javier", "javier_face_moodSternB");
+        --    ControllerSetLooping(mood_javi , true); 
+        --    ControllerSetContribution(mood_javi, 0.6);
+        elseif player_clip == 35 then
+            mood_javi = PlayAnimation("Javier", "javier_face_moodAngryE");
+            ControllerSetLooping(mood_javi , true); 
+            ControllerSetContribution(mood_javi, 0.6);
+        elseif player_clip == 62 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodDoubtA");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+        elseif player_clip == 63 then
+            mood_mari = PlayAnimation("Mariana", "clementine_face_moodThinkA");
+            ControllerSetLooping(mood_mari , true); 
+            ControllerSetContribution(mood_mari, 0.6);
+        elseif player_clip == 64 then
+            mood_clem = PlayAnimation("Clementine", "clementine_face_moodFearB");
+            ControllerSetLooping(mood_clem , true); 
+            ControllerSetContribution(mood_clem, 0.6);
+        elseif player_clip == 65 then
+            mood_javi = PlayAnimation("Javier", "javier_face_moodWorryBX");
+            ControllerSetLooping(mood_javi , true); 
+            ControllerSetContribution(mood_javi, 0.6);
+        elseif player_clip == 70 then
+            mood_mari = PlayAnimation("Mariana", "clementine_face_moodWorryB");
+            ControllerSetLooping(mood_mari , true); 
+            ControllerSetContribution(mood_mari, 0.6);
+        elseif player_clip == 75 then
+            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodFearC");
+            ControllerSetLooping(mood_gabe , true); 
+            ControllerSetContribution(mood_gabe, 0.6);
+            mood_mari = PlayAnimation("Mariana", "clementine_face_moodFearA");
+            ControllerSetLooping(mood_mari , true); 
+            ControllerSetContribution(mood_mari, 0.6);
+        elseif player_clip == 79 then
+            mood_javi = PlayAnimation("Javier", "javier_face_moodPainC");
+            ControllerSetLooping(mood_javi , true); 
+            ControllerSetContribution(mood_javi, 0.6);
+
+        end
+    
+    end
+
+
+
+
+end
+
 path_1 = function()
-    
-    
+
     local persistent_data_save = {path = 1};
     persistent_data.persistent = persistent_data_save;
     local persistent_data_path = "Custom_Cutscenes/demo_cutscene/persistent.ini";
@@ -445,7 +473,7 @@ end
 
 mari_animation_clip_41 = function()
 
-    Custom_SetAgentWorldPosition("Javier", Vector(-0.62880742549896, 0, 1.3940000534058), kScene); -- Javier one-frame teleport fix
+    Custom_SetAgentWorldPosition("Javier", Vector(0, -1000, 0), kScene); -- Javier one-frame teleport fix
 
     clip_41_done = 0;
     clip_41_time = GetTotalTime() + 3.1;
@@ -487,6 +515,12 @@ mari_animation_clip_42_update = function()
             clip_42_done = 1;
         end
     end
+end
+
+music_clip_45 = function()
+    controller_sting1 = SoundPlay("sting1_mus_sting_Tense_02");
+    controller_music2 = SoundPlay("music2_mus_loop_Tense_30");
+    ControllerSetSoundVolume(controller_music2, 0.4);
 end
 
 anm_clip_53 = function()
@@ -579,6 +613,16 @@ clem_anm_clip_60_update = function()
 end
 
 
+sounds_clip_66 = function()
+    
+    local controller_sound = SoundPlay("S4_Zombie_Nick_Low_2");
+
+    controller_sting2 = SoundPlay("sting2_mus_sting_Tense_04");
+    ControllerSetSoundVolume(controller_sting2, 0.4);
+end
+
+
+
 spawn_guns_clip_67 = function()
     mari_animation_clip_63_controller = PlayAnimation("Mariana", "sk62_clementineStandA_toTense");
     ControllerSetLooping(mari_animation_clip_63_controller , false); 
@@ -600,197 +644,12 @@ spawn_guns_clip_67 = function()
     if AgentHasNode("Clementine", nodeName) then
         AgentAttachToNode(agent_pistol_2, "Clementine", nodeName);
     end
+
+    controller_music3 = SoundPlay("music_3_mus_loop_Action_09b");
+    ControllerSetSoundVolume(controller_music3, 0.4);
+    ControllerSetLooping(controller_music3, true);
 end
 
-
-spawn_knife_clip_70 = function()
-    --agent_knife_1 = AgentCreate("Knife_1", "obj_knifeKABAR.prop", Vector(-0.33, 0.8, 0.25), Vector(5,15,0), kScene, false, false) --DO NOT get these numbers from starting clip
-    agent_knife_1 = AgentCreate("Knife_1", "obj_knifeKABAR.prop", Vector(-0.165, 0.705, 0.12), Vector(5,55,0), kScene, false, false) --DO NOT get these numbers from starting clip
-    Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene);
-    Custom_SetAgentWorldRotation("Mariana", Vector(0.98, -326, 0), kScene);
-    --wrist_L
-    --wrist_R
-    local nodeName = "wrist_R";
-    if AgentHasNode("Mariana", nodeName) then
-        AgentAttachToNode(agent_knife_1, "Mariana", nodeName); 
-    end
-    Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", false, kScene)
-
-    clip_70_done = 0;
-    clip_70_time = GetTotalTime() + 0.6;
-    Callback_OnPostUpdate:Add(spawn_knife_clip_70_update); 
-    
-end
-
-spawn_knife_clip_70_update = function()
-    if clip_70_done == 0 then
-        if GetTotalTime() > clip_70_time then
-            local controller_sound = SoundPlay("S4_sfx_draw_knife_sheath");
-            Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", true, kScene)
-            clip_70_done = 1;
-        end
-    end
-end
-
-
-knife_re_pos_clip_71 = function()
-    clip_71_done = 0;
-    clip_71_done_stab1 = 0;
-    clip_71_done_stab2 = 0;
-    clip_71_done_body = 0;
-    clip_71_time = GetTotalTime() + 2.5;
-    clip_71_time_stab1 = GetTotalTime() + 1;
-    clip_71_time_stab2 = GetTotalTime() + 2.66;
-    clip_71_time_body = GetTotalTime() + 4;
-    Callback_OnPostUpdate:Add(knife_re_pos_clip_71_update); 
-end
-
-
-knife_re_pos_clip_71_update = function()
-    if clip_71_done == 0 then
-        if GetTotalTime() > clip_71_time then
-
-            Custom_SetAgentWorldRotation("Knife_1", Vector(235,235,0), kScene);
-            clip_71_done = 1;
-        end
-        if clip_71_done_stab1 == 0 and GetTotalTime() > clip_71_time_stab1 then
-
-            local controller_sound = SoundPlay("S4_sfx_stab_gore_blood_05");
-            clip_71_done_stab1 = 1;
-        end
-    
-    end
-    if clip_71_done_stab2 == 0 then
-        if GetTotalTime() > clip_71_time_stab2 then
-            local controller_sound = SoundPlay("S4_sfx_stab_gore_blood_04");
-            local controller_sound = SoundPlay("S3_NV_Mariana_fighting_alt07.wav");
-            clip_71_done_stab2 = 1;
-        end
-    end
-    if clip_71_done_body == 0 then
-        if GetTotalTime() > clip_71_time_body then
-            local controller_sound = SoundPlay("S4_SFX_bodyfall_8");
-            clip_71_done_body = 1;
-        end
-    end
-
-end
-
-
-
-mari_anm_clip_73 = function()
-    mari_animation_clip_73_controller = PlayAnimation("Mariana", "clementine_headGesture_nodYesQuick_add");
-    ControllerSetLooping(mari_animation_clip_73_controller , false); 
-    mari_animation_clip_73_controller_2 = PlayAnimation("Mariana", "clementine_headEyeGesture_lookLeft_add");
-    ControllerSetLooping(mari_animation_clip_73_controller_2 , false); 
-end 
-
-mari_pos_correction_clip_75 = function()
-    Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene); -- Mari one-frame teleport fix
-    Custom_SetAgentWorldPosition("Gabe", Vector(0, 0, 0), kScene); -- Gabe one-frame teleport fix
-end 
-
-knife_re_pos_clip_80 = function()
-    Custom_SetAgentWorldRotation("Knife_1", Vector(30,-295,-45), kScene);
-end
-
-gun_visible_clip_78 = function()
-    Custom_AgentSetProperty("Pistol_1",  "Runtime: Visible", true, kScene)
-    Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
-    sounds_clip_78();
-end
-
-
-spawn_bat_clip_81 = function()
-    Custom_AgentSetProperty("Pistol_1",  "Runtime: Visible", false, kScene)
-    Custom_AgentSetProperty("Bat",  "Runtime: Visible", true, kScene)
-    --QTE stuff
-    
-    clip_81_time = GetTotalTime() + 3.5;
-    clip_81_time_2 = GetTotalTime() + 3.7;
-    clip_81_done = 0;
-    QTE_done = 0;
-    if clip_81_played_once == 0 then
-        Callback_OnPostUpdate:Add(clip_81_QTE_update); 
-        clip_81_played_once = 1;
-    end
-end
-
-clip_81_QTE_update = function()
-    if clip_81_done == 0 then
-        if GetTotalTime() > clip_81_time and QTE_done == 1 then
-            chosen_text = 1;
-            clip_81_done = 1;
-        elseif Custom_InputKeyPress(69) then -- Check if E is pressed 
-            QTE_done = 1;
-            --clip_81_done = 1;
-        end
-    end
-    if GetTotalTime() > clip_81_time_2 then
-        clip_81_done = 1;
-    end
-end
-
-snd_clip_82 = function()
-    clip_82_done = 0;
-    clip_82_time = GetTotalTime() + 1.2;
-    if clip_82_played_once == 0 then
-        Callback_OnPostUpdate:Add(snd_clip_82_update);  
-        clip_82_played_once = 1;
-    end
-end
-
-snd_clip_82_update = function()
-    if clip_82_done == 0 then
-        if GetTotalTime() > clip_82_time then
-            local controller_sound = SoundPlay("a371257243");
-            local controller_sound = SoundPlay("S2_gore_eating4");
-            clip_82_done = 1;
-        end
-    end
-end
-
-weapons_visible_clip_84 = function()
-    Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", false, kScene)
-    Callback_OnPostUpdate:Add(weapons_visible_clip_84_update);   
-    clip_84_done = 0;
-    clip_84_time = GetTotalTime() + 1; 
-end
-
-weapons_visible_clip_84_update = function()
-    if clip_84_done == 0 then
-        if GetTotalTime() > clip_84_time then
-            Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
-            clip_84_done = 1;
-        end
-    end
-    
-end
-
-shot_clip_85 = function()
-    clip_85_done = 0;
-    clip_85_time = GetTotalTime() + 1.5;
-    Callback_OnPostUpdate:Add(shot_clip_85_update);   
-end
-
-shot_clip_85_update= function()
-    if clip_85_done == 0 then
-        if GetTotalTime() > clip_85_time then
-            clem_animation_clip_85_controller = PlayAnimation("Clementine", "sk61_javierStandAAimPistol_fire_add");
-            gun_light(2);
-            local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_1");
-            ControllerSetLooping(clem_animation_clip_85_controller , false); 
-            clip_85_done = 1;
-        end
-    end  
-end
-
---Sound effects
-
-sounds_clip_66 = function()
-    
-    local controller_sound = SoundPlay("S4_Zombie_Nick_Low_2");
-end
 
 sounds_clip_68 = function()
     clip_68_done = 0;
@@ -898,9 +757,103 @@ sounds_clip_68_update = function()
     end   
 end
 
+
+spawn_knife_clip_70 = function()
+    --agent_knife_1 = AgentCreate("Knife_1", "obj_knifeKABAR.prop", Vector(-0.33, 0.8, 0.25), Vector(5,15,0), kScene, false, false) --DO NOT get these numbers from starting clip
+    agent_knife_1 = AgentCreate("Knife_1", "obj_knifeKABAR.prop", Vector(-0.165, 0.705, 0.12), Vector(5,55,0), kScene, false, false) --DO NOT get these numbers from starting clip
+    Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene);
+    Custom_SetAgentWorldRotation("Mariana", Vector(0.98, -326, 0), kScene);
+    --wrist_L
+    --wrist_R
+    local nodeName = "wrist_R";
+    if AgentHasNode("Mariana", nodeName) then
+        AgentAttachToNode(agent_knife_1, "Mariana", nodeName); 
+    end
+    Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", false, kScene)
+
+    clip_70_done = 0;
+    clip_70_time = GetTotalTime() + 0.6;
+    Callback_OnPostUpdate:Add(spawn_knife_clip_70_update); 
+    
+end
+
+spawn_knife_clip_70_update = function()
+    if clip_70_done == 0 then
+        if GetTotalTime() > clip_70_time then
+            local controller_sound = SoundPlay("S4_sfx_draw_knife_sheath");
+            Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", true, kScene)
+            clip_70_done = 1;
+        end
+    end
+end
+
+
+knife_re_pos_clip_71 = function()
+    clip_71_done = 0;
+    clip_71_done_stab1 = 0;
+    clip_71_done_stab2 = 0;
+    clip_71_done_body = 0;
+    clip_71_time = GetTotalTime() + 2.5;
+    clip_71_time_stab1 = GetTotalTime() + 1;
+    clip_71_time_stab2 = GetTotalTime() + 2.66;
+    clip_71_time_body = GetTotalTime() + 4;
+    Callback_OnPostUpdate:Add(knife_re_pos_clip_71_update); 
+end
+
+
+knife_re_pos_clip_71_update = function()
+    if clip_71_done == 0 then
+        if GetTotalTime() > clip_71_time then
+
+            Custom_SetAgentWorldRotation("Knife_1", Vector(235,235,0), kScene);
+            clip_71_done = 1;
+        end
+        if clip_71_done_stab1 == 0 and GetTotalTime() > clip_71_time_stab1 then
+
+            local controller_sound = SoundPlay("S4_sfx_stab_gore_blood_05");
+            clip_71_done_stab1 = 1;
+        end
+    
+    end
+    if clip_71_done_stab2 == 0 then
+        if GetTotalTime() > clip_71_time_stab2 then
+            local controller_sound = SoundPlay("S4_sfx_stab_gore_blood_04");
+            local controller_sound = SoundPlay("S3_NV_Mariana_fighting_alt07.wav");
+            clip_71_done_stab2 = 1;
+        end
+    end
+    if clip_71_done_body == 0 then
+        if GetTotalTime() > clip_71_time_body then
+            local controller_sound = SoundPlay("S4_SFX_bodyfall_8");
+            clip_71_done_body = 1;
+        end
+    end
+
+end
+
+
+
+mari_anm_clip_73 = function()
+    mari_animation_clip_73_controller = PlayAnimation("Mariana", "clementine_headGesture_nodYesQuick_add");
+    ControllerSetLooping(mari_animation_clip_73_controller , false); 
+    mari_animation_clip_73_controller_2 = PlayAnimation("Mariana", "clementine_headEyeGesture_lookLeft_add");
+    ControllerSetLooping(mari_animation_clip_73_controller_2 , false); 
+end
+
+
+
+
 sounds_clip_74 = function()
     local controller_sound = SoundPlay("S4_ZombieBG_Scott_23");
 end
+
+
+
+mari_pos_correction_clip_75 = function()
+    Custom_SetAgentWorldPosition("Mariana", Vector(0, 0, 0), kScene); -- Mari one-frame teleport fix
+    Custom_SetAgentWorldPosition("Gabe", Vector(0, 0, 0), kScene); -- Gabe one-frame teleport fix
+end 
+
 
 sounds_clip_76 = function()
     local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_4");
@@ -926,12 +879,7 @@ sounds_clip_77 = function()
     Callback_OnPostUpdate:Add(sounds_clip_78_update);   
 end
 
-sounds_clip_78 = function()
-    clip_78_click1 = 0;
-    clip_78_click2 = 0;
-    clip_78_time_click2 = GetTotalTime() + 0.66;
-    clip_78_start = 0;   
-end
+
 
 sounds_clip_78_update = function()
     if clip_78_start == 0 then
@@ -946,121 +894,118 @@ sounds_clip_78_update = function()
     end
 end
 
---mood manager
-
-moods = function()
-
-    controller_amb = SoundPlay("S3_AMB_Richmond_Alley_Dusk");
-    ControllerSetLooping(controller_amb, true);
-    ControllerSetSoundVolume(controller_amb, 0.3);
-    ControllerFadeIn(controller_amb, 2.0);
-
-    controller_music1 = SoundPlay("music1_mus_loop_Hopeful_02");
-    ControllerSetSoundVolume(controller_music1, 0.3);
-    
-
-    mood_clip = 0;
-    Callback_OnPostUpdate:Add(moods_update);
+sounds_clip_78 = function()
+    clip_78_click1 = 0;
+    clip_78_click2 = 0;
+    clip_78_time_click2 = GetTotalTime() + 0.66;
+    clip_78_start = 0;   
 end
 
-moods_update = function()
 
-        --pcall(ControllerKill, mood_clem)
 
-            --mood_clem = PlayAnimation("Clementine", "");
-            --ControllerSetLooping(mood_clem , true); 
-            --ControllerSetContribution(mood_clem, 0.6);
+gun_visible_clip_78 = function()
+    Custom_AgentSetProperty("Pistol_1",  "Runtime: Visible", true, kScene)
+    Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
+    sounds_clip_78();
+end
 
-            --mood_javi = PlayAnimation("Javier", "");
-            --ControllerSetLooping(mood_javi , true); 
-            --ControllerSetContribution(mood_javi, 0.6);
+knife_re_pos_clip_80 = function()
+    Custom_SetAgentWorldRotation("Knife_1", Vector(30,-295,-45), kScene);
+end
 
-            --mood_mari = PlayAnimation("Mariana", "");
-            --ControllerSetLooping(mood_mari , true); 
-            --ControllerSetContribution(mood_mari, 0.6);
 
-            --mood_gabe = PlayAnimation("Gabe", "");
-            --ControllerSetLooping(mood_gabe , true); 
-            --ControllerSetContribution(mood_gabe, 0.6);
-    if player_clip ~= mood_clip then
-        mood_clip = player_clip;
-        pcall(ControllerKill, mood_clem)
-        pcall(ControllerKill, mood_javi)
-        pcall(ControllerKill, mood_mari)
-        pcall(ControllerKill, mood_gabe)
-
-        if player_clip == 7 then
-            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodShockA");
-            ControllerSetLooping(mood_gabe , true); 
-            ControllerSetContribution(mood_gabe, 0.6);
-        elseif player_clip == 26 then
-            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryA");
-            ControllerSetLooping(mood_gabe , true); 
-            ControllerSetContribution(mood_gabe, 0.6);
-        elseif player_clip == 27 then
-            mood_mari = PlayAnimation("Mariana", "clementine_face_moodWorryA");
-            ControllerSetLooping(mood_mari , true);
-            ControllerSetContribution(mood_mari, 0.6); 
-        elseif player_clip == 28 then
-            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryB");
-            ControllerSetLooping(mood_gabe , true); 
-            ControllerSetContribution(mood_gabe, 0.6);
-        elseif player_clip == 30 then
-            mood_javi = PlayAnimation("Javier", "javier_face_moodSternA");
-            ControllerSetLooping(mood_javi , true); 
-            ControllerSetContribution(mood_javi, 0.6);
-        elseif player_clip == 31 then
-            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodAngryC");
-            ControllerSetLooping(mood_gabe , true); 
-            ControllerSetContribution(mood_gabe, 0.6);
-        --elseif player_clip == 33 then
-        --    mood_javi = PlayAnimation("Javier", "javier_face_moodSternB");
-        --    ControllerSetLooping(mood_javi , true); 
-        --    ControllerSetContribution(mood_javi, 0.6);
-        elseif player_clip == 35 then
-            mood_javi = PlayAnimation("Javier", "javier_face_moodAngryE");
-            ControllerSetLooping(mood_javi , true); 
-            ControllerSetContribution(mood_javi, 0.6);
-        elseif player_clip == 62 then
-            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodDoubtA");
-            ControllerSetLooping(mood_gabe , true); 
-            ControllerSetContribution(mood_gabe, 0.6);
-        elseif player_clip == 63 then
-            mood_mari = PlayAnimation("Mariana", "clementine_face_moodThinkA");
-            ControllerSetLooping(mood_mari , true); 
-            ControllerSetContribution(mood_mari, 0.6);
-        elseif player_clip == 64 then
-            mood_clem = PlayAnimation("Clementine", "clementine_face_moodFearB");
-            ControllerSetLooping(mood_clem , true); 
-            ControllerSetContribution(mood_clem, 0.6);
-        elseif player_clip == 65 then
-            mood_javi = PlayAnimation("Javier", "javier_face_moodWorryBX");
-            ControllerSetLooping(mood_javi , true); 
-            ControllerSetContribution(mood_javi, 0.6);
-        elseif player_clip == 70 then
-            mood_mari = PlayAnimation("Mariana", "clementine_face_moodWorryB");
-            ControllerSetLooping(mood_mari , true); 
-            ControllerSetContribution(mood_mari, 0.6);
-        elseif player_clip == 75 then
-            mood_gabe = PlayAnimation("Gabe", "gabe_face_moodFearC");
-            ControllerSetLooping(mood_gabe , true); 
-            ControllerSetContribution(mood_gabe, 0.6);
-            mood_mari = PlayAnimation("Mariana", "clementine_face_moodFearA");
-            ControllerSetLooping(mood_mari , true); 
-            ControllerSetContribution(mood_mari, 0.6);
-        elseif player_clip == 79 then
-            mood_javi = PlayAnimation("Javier", "javier_face_moodPainC");
-            ControllerSetLooping(mood_javi , true); 
-            ControllerSetContribution(mood_javi, 0.6);
-
-        end
+spawn_bat_clip_81 = function()
+    Custom_AgentSetProperty("Pistol_1",  "Runtime: Visible", false, kScene)
+    Custom_AgentSetProperty("Bat",  "Runtime: Visible", true, kScene)
+    --QTE stuff
     
+    clip_81_time = GetTotalTime() + 3.5;
+    clip_81_time_2 = GetTotalTime() + 3.7;
+    clip_81_done = 0;
+    QTE_done = 0;
+    if clip_81_played_once == 0 then
+        Callback_OnPostUpdate:Add(clip_81_QTE_update); 
+        clip_81_played_once = 1;
     end
-
-
-
-
 end
+
+clip_81_QTE_update = function()
+    if clip_81_done == 0 then
+        if GetTotalTime() > clip_81_time and QTE_done == 1 then
+            chosen_text = 1;
+            clip_81_done = 1;
+        elseif Custom_InputKeyPress(69) then -- Check if E is pressed 
+            QTE_done = 1;
+            --clip_81_done = 1;
+        end
+    end
+    if GetTotalTime() > clip_81_time_2 then
+        clip_81_done = 1;
+    end
+end
+
+snd_clip_82 = function()
+    clip_82_done = 0;
+    clip_82_time = GetTotalTime() + 1.2;
+    if clip_82_played_once == 0 then
+        Callback_OnPostUpdate:Add(snd_clip_82_update);  
+        clip_82_played_once = 1;
+    end
+end
+
+snd_clip_82_update = function()
+    if clip_82_done == 0 then
+        if GetTotalTime() > clip_82_time then
+            local controller_sound = SoundPlay("a371257243");
+            local controller_sound = SoundPlay("S2_gore_eating4");
+            clip_82_done = 1;
+        end
+    end
+end
+
+weapons_visible_clip_84 = function()
+    Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", false, kScene)
+    Callback_OnPostUpdate:Add(weapons_visible_clip_84_update);   
+    clip_84_done = 0;
+    clip_84_time = GetTotalTime() + 1; 
+end
+
+weapons_visible_clip_84_update = function()
+    if clip_84_done == 0 then
+        if GetTotalTime() > clip_84_time then
+            Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
+            clip_84_done = 1;
+        end
+    end
+    
+end
+
+shot_clip_85 = function()
+    clip_85_done = 0;
+    clip_85_time = GetTotalTime() + 1.5;
+    Callback_OnPostUpdate:Add(shot_clip_85_update);   
+end
+
+shot_clip_85_update= function()
+    if clip_85_done == 0 then
+        if GetTotalTime() > clip_85_time then
+            clem_animation_clip_85_controller = PlayAnimation("Clementine", "sk61_javierStandAAimPistol_fire_add");
+            gun_light(2);
+            local controller_sound = SoundPlay("S4_SFX_Clem_Gun_p250_Shot_1");
+            ControllerKill(controller_music3);
+            controller_sting3 = SoundPlay("sting3_mus_sting_Tense_07");
+            ControllerSetSoundVolume(controller_sting3, 0.5);
+            ControllerSetLooping(clem_animation_clip_85_controller , false); 
+            clip_85_done = 1;
+        end
+    end  
+end
+
+
+cutscene_end_clip_88 = function()
+    SubProject_Switch("Menu", "Menu_main.lua")
+end
+
 
 
 
