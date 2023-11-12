@@ -96,8 +96,11 @@ end
 
 
 
-CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from, dialogue_mode_number)
+CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from, dialogue_mode_number, season_mode_number)
     
+    season_mode = season_mode_number; --0 for S2-S4-Michonne, 1 for S3
+
+
     player_name_of_the_cutscene = name_of_the_cutscene;
     local player_cutscene_names_path = "Custom_Cutscenes/" .. player_name_of_the_cutscene .."/player.ini";
     player_cutscene_data = LIP.load(player_cutscene_names_path); --cutscene data, info from player file
@@ -171,16 +174,27 @@ CutscenePlayer = function(name_of_the_cutscene, clip_to_start_from, dialogue_mod
 --ui_carouselDisplay_title.prop
     --choice UI
     --make agents
-    agent_choice_ui_1 = AgentCreate("agent_choice_ui_1", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
-    agent_choice_ui_2 = AgentCreate("agent_choice_ui_2", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
-    agent_choice_ui_3 = AgentCreate("agent_choice_ui_3", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
-    agent_choice_ui_4 = AgentCreate("agent_choice_ui_4", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
-        
-    --set UI textures
-    ShaderSwapTexture(agent_choice_ui_1, "ui_boot_title.d3dtx", "custom_cutscene_choice_ui.d3dtx");
-    ShaderSwapTexture(agent_choice_ui_2, "ui_boot_title.d3dtx", "custom_cutscene_choice_ui.d3dtx");
-    ShaderSwapTexture(agent_choice_ui_3, "ui_boot_title.d3dtx", "custom_cutscene_choice_ui.d3dtx");
-    ShaderSwapTexture(agent_choice_ui_4, "ui_boot_title.d3dtx", "custom_cutscene_choice_ui.d3dtx");
+    if season_mode == 1 then -- for ANF
+        agent_choice_ui_1 = AgentCreate("agent_choice_ui_1", "ui_nextTimeOn_titleLogo.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+        agent_choice_ui_2 = AgentCreate("agent_choice_ui_2", "ui_nextTimeOn_titleLogo.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+        agent_choice_ui_3 = AgentCreate("agent_choice_ui_3", "ui_nextTimeOn_titleLogo.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+        agent_choice_ui_4 = AgentCreate("agent_choice_ui_4", "ui_nextTimeOn_titleLogo.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+        --set UI textures
+        ShaderSwapTexture(agent_choice_ui_1, "ui_nextTimeOn_titleLogo.d3dtx", "custom_cutscene_choice_ui.d3dtx");
+        ShaderSwapTexture(agent_choice_ui_2, "ui_nextTimeOn_titleLogo.d3dtx", "custom_cutscene_choice_ui.d3dtx");
+        ShaderSwapTexture(agent_choice_ui_3, "ui_nextTimeOn_titleLogo.d3dtx", "custom_cutscene_choice_ui.d3dtx");
+        ShaderSwapTexture(agent_choice_ui_4, "ui_nextTimeOn_titleLogo.d3dtx", "custom_cutscene_choice_ui.d3dtx");  
+    else 
+        agent_choice_ui_1 = AgentCreate("agent_choice_ui_1", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+        agent_choice_ui_2 = AgentCreate("agent_choice_ui_2", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+        agent_choice_ui_3 = AgentCreate("agent_choice_ui_3", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+        agent_choice_ui_4 = AgentCreate("agent_choice_ui_4", "ui_boot_title.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+        --set UI textures
+        ShaderSwapTexture(agent_choice_ui_1, "ui_boot_title.d3dtx", "custom_cutscene_choice_ui.d3dtx");
+        ShaderSwapTexture(agent_choice_ui_2, "ui_boot_title.d3dtx", "custom_cutscene_choice_ui.d3dtx");
+        ShaderSwapTexture(agent_choice_ui_3, "ui_boot_title.d3dtx", "custom_cutscene_choice_ui.d3dtx");
+        ShaderSwapTexture(agent_choice_ui_4, "ui_boot_title.d3dtx", "custom_cutscene_choice_ui.d3dtx");
+    end
 
     --set properties, transparency, etc
     --Custom_AgentSetProperty("agent_choice_ui_1", "Render After Anti-Aliasing", true, Custom_CutsceneDev_SceneObject)

@@ -63,6 +63,9 @@ Cutscene_CreateCutsceneCamera = function()
     Custom_AgentSetProperty(agent_name_cutsceneCamera, "Clip Plane - Far", 2500, kScene);
     Custom_AgentSetProperty(agent_name_cutsceneCamera, "Clip Plane - Near", 0.05, kScene);
 
+
+    --Custom_AgentSetProperty(agent_name_cutsceneCamera, "Field of View", 50, Custom_CutsceneDev_SceneObject); --FOV correction for S2
+
     --bulk remove the original cameras that were in the scene
     Custom_RemovingAgentsWithPrefix(kScene, "cam_");
 
@@ -76,12 +79,14 @@ end
 DemoScene = function()
    
     --loading resources from all episodes of Season 3 (loading cross-season resources this way is not recommended and may break the scene)
+    --load "ProjectSeason3" to  work with ANF, load "ProjectSeason4" to work in any other season (S2, S4, Michonne)
     ResourceSetEnable("ProjectSeason3");
     ResourceSetEnable("WalkingDead301");
     ResourceSetEnable("WalkingDead302");
     ResourceSetEnable("WalkingDead303");
     ResourceSetEnable("WalkingDead304");
     ResourceSetEnable("WalkingDead305"); 
+     
 
     --IMPORTANT - Name agents with their Telltale names, if you give them an entirely custom names they might break
     agent_mari = AgentCreate("Mariana", "sk62_mariana.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
@@ -244,10 +249,8 @@ DemoScene = function()
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
-    CutscenePlayer("demo_cutscene", 0, 0);
-    --CutscenePlayer("demo_cutscene", 63, 0);
-
-
+    CutscenePlayer("demo_cutscene", 0, 1, 1);
+    --CutscenePlayer("demo_cutscene", 63, 0, 1);
 
 
 end

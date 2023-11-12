@@ -140,7 +140,12 @@ Menu_Main = function()
     end
     
     --cutscene mod button
-    Menu_Add(ListButtonLite, "firstcutscenelevel", "Launch Demo Scene", "Menu_LoadLevel_Copy(\"" .. "WalkingDead302" .. "\", \"" .. "Demo_Scene" .. "\")")
+    
+    
+    Menu_Add(ListButtonLite, "firstcutscenelevel_2", "Launch S2 Scene", "Menu_LoadLevel_Copy(\"" .. "WalkingDead202" .. "\", \"" .. "Scene_S2" .. "\")")
+    Menu_Add(ListButtonLite, "firstcutscenelevel_3", "Launch Demo Scene", "Menu_LoadLevel_Copy(\"" .. "WalkingDead302" .. "\", \"" .. "Demo_Scene" .. "\")")
+    Menu_Add(ListButtonLite, "firstcutscenelevel_4", "Launch S4 Scene", "Menu_LoadLevel_Copy(\"" .. "WalkingDead402" .. "\", \"" .. "Scene_S4" .. "\")")
+    Menu_Add(ListButtonLite, "firstcutscenelevel_m", "Launch M Scene", "Menu_LoadLevel_Copy(\"" .. "WalkingDeadM102" .. "\", \"" .. "Scene_SM" .. "\")")
   --------------------------------------
 
 

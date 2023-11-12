@@ -987,8 +987,8 @@ move_object = function()
     
 
     --mode
-    --TAB
-    if Custom_InputKeyPress(9) then
+    --X
+    if Custom_InputKeyPress(84) then
         if GetTotalTime() > modeSwitchTime then
             mode = mode + 1;
             if mode > 2 then
