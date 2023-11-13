@@ -94,7 +94,7 @@ DemoScene = function()
     agent_anf_1 = AgentCreate("Rufus", "sk61_rufus.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     agent_anf_2 = AgentCreate("Eli", "sk61_eli.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     agent_anf_3 = AgentCreate("Roxanne", "sk62_roxanne.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
-
+    
 
     agent_zombie_1 = AgentCreate("Zombie_1", "sk61_zombie.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
     agent_zombie_2 = AgentCreate("Zombie_2", "sk61_zombieBulldozered.prop", Vector(0, 0, 0), Vector(0,0,0), kScene, false, false)
@@ -112,6 +112,8 @@ DemoScene = function()
     Custom_SetAgentWorldPosition("Jesus", Vector(0, -1000, 0), kScene);
 
     Custom_SetAgentWorldPosition("Javier", Vector(0, 0, 0), kScene);
+
+
     
     --light for Act 1 ANF guards and Mariana
     local flashlightColor = RGBColor(255, 255, 255, 50)
@@ -246,6 +248,24 @@ DemoScene = function()
         Callback_OnPostUpdate:Add(Custom_CutsceneDev_UpdateCutsceneTools_Main);
     end
     
+
+
+
+    --QTE set up
+    agent_demo_scene_qte = AgentCreate("agent_demo_scene_qte", "ui_nextTimeOn_titleLogo.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+    ShaderSwapTexture(agent_demo_scene_qte, "ui_nextTimeOn_titleLogo.d3dtx", "demo_scene_qte_e.d3dtx");
+    --set properties, transparency, etc
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Test", false, Custom_CutsceneDev_SceneObject)
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Write", false, Custom_CutsceneDev_SceneObject)
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Write Alpha", false, Custom_CutsceneDev_SceneObject)
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Layer", 95, Custom_CutsceneDev_SceneObject)
+    AgentAttach("agent_demo_scene_qte", agent_name_cutsceneCamera);
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Axis Scale", Vector(1.8,1,1), Custom_CutsceneDev_SceneObject);
+    Custom_SetAgentPosition("agent_demo_scene_qte", Vector(0,-4.5,22), Custom_CutsceneDev_SceneObject);
+    Custom_SetAgentRotation("agent_demo_scene_qte", Vector(0,180,0), Custom_CutsceneDev_SceneObject);
+    Custom_AgentSetProperty("agent_demo_scene_qte",  "Runtime: Visible", false, kScene)
+
+
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
@@ -918,10 +938,11 @@ end
 
 
 spawn_bat_clip_81 = function()
+    
     Custom_AgentSetProperty("Pistol_1",  "Runtime: Visible", false, kScene)
     Custom_AgentSetProperty("Bat",  "Runtime: Visible", true, kScene)
     --QTE stuff
-    
+    Custom_AgentSetProperty("agent_demo_scene_qte",  "Runtime: Visible", true, kScene)
     clip_81_time = GetTotalTime() + 3.5;
     clip_81_time_2 = GetTotalTime() + 3.7;
     clip_81_done = 0;
@@ -939,7 +960,7 @@ clip_81_QTE_update = function()
             clip_81_done = 1;
         elseif Custom_InputKeyPress(69) then -- Check if E is pressed 
             QTE_done = 1;
-            --clip_81_done = 1;
+            Custom_AgentSetProperty("agent_demo_scene_qte",  "Runtime: Visible", false, kScene)
         end
     end
     if GetTotalTime() > clip_81_time_2 then
@@ -948,6 +969,7 @@ clip_81_QTE_update = function()
 end
 
 snd_clip_82 = function()
+    Custom_AgentSetProperty("agent_demo_scene_qte",  "Runtime: Visible", false, kScene)
     clip_82_done = 0;
     clip_82_time = GetTotalTime() + 1.2;
     if clip_82_played_once == 0 then
@@ -965,6 +987,11 @@ snd_clip_82_update = function()
         end
     end
 end
+
+qte_disable_clip_83= function()
+    Custom_AgentSetProperty("agent_demo_scene_qte",  "Runtime: Visible", false, kScene)
+end
+
 
 weapons_visible_clip_84 = function()
     Custom_AgentSetProperty("Knife_1",  "Runtime: Visible", false, kScene)
