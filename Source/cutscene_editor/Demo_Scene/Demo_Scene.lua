@@ -228,8 +228,7 @@ DemoScene = function()
     Custom_AgentSetProperty("Bat",  "Runtime: Visible", false, kScene)
     
     
-    clip_81_played_once = 0;
-    clip_82_played_once = 0;
+    
     Callback_OnPostUpdate:Add(gun_light_update);
     
     
@@ -248,22 +247,6 @@ DemoScene = function()
         Callback_OnPostUpdate:Add(Custom_CutsceneDev_UpdateCutsceneTools_Main);
     end
     
-
-
-
-    --QTE set up
-    agent_demo_scene_qte = AgentCreate("agent_demo_scene_qte", "ui_nextTimeOn_titleLogo.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
-    ShaderSwapTexture(agent_demo_scene_qte, "ui_nextTimeOn_titleLogo.d3dtx", "demo_scene_qte_e.d3dtx");
-    --set properties, transparency, etc
-    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Test", false, Custom_CutsceneDev_SceneObject)
-    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Write", false, Custom_CutsceneDev_SceneObject)
-    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Write Alpha", false, Custom_CutsceneDev_SceneObject)
-    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Layer", 95, Custom_CutsceneDev_SceneObject)
-    AgentAttach("agent_demo_scene_qte", agent_name_cutsceneCamera);
-    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Axis Scale", Vector(1.8,1,1), Custom_CutsceneDev_SceneObject);
-    Custom_SetAgentPosition("agent_demo_scene_qte", Vector(0,-4.5,22), Custom_CutsceneDev_SceneObject);
-    Custom_SetAgentRotation("agent_demo_scene_qte", Vector(0,180,0), Custom_CutsceneDev_SceneObject);
-    Custom_AgentSetProperty("agent_demo_scene_qte",  "Runtime: Visible", false, kScene)
 
 
     --PrintSceneListToTXT(kScene, "ObjectList.txt");
@@ -286,6 +269,11 @@ end
 
 --custom functions
 
+
+
+
+clip_81_played_once = 0;
+clip_82_played_once = 0;
 
 gun_1_check = 0;
 gun_2_check = 0;
@@ -332,6 +320,22 @@ persistent_data_check = {};
 --mood manager
 
 moods = function()
+
+    --QTE set up
+    agent_demo_scene_qte = AgentCreate("agent_demo_scene_qte", "ui_nextTimeOn_titleLogo.prop", Vector(0, 0, 0), Vector(0,0,0), Custom_CutsceneDev_SceneObject, false, false)
+    ShaderSwapTexture(agent_demo_scene_qte, "ui_nextTimeOn_titleLogo.d3dtx", "demo_scene_qte_e.d3dtx");
+    --set properties, transparency, etc
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Test", false, Custom_CutsceneDev_SceneObject)
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Write", false, Custom_CutsceneDev_SceneObject)
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Depth Write Alpha", false, Custom_CutsceneDev_SceneObject)
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Layer", 95, Custom_CutsceneDev_SceneObject)
+    AgentAttach("agent_demo_scene_qte", agent_name_cutsceneCamera);
+    Custom_AgentSetProperty("agent_demo_scene_qte", "Render Axis Scale", Vector(1.8,1,1), Custom_CutsceneDev_SceneObject);
+    Custom_SetAgentPosition("agent_demo_scene_qte", Vector(0,-4.5,22), Custom_CutsceneDev_SceneObject);
+    Custom_SetAgentRotation("agent_demo_scene_qte", Vector(0,180,0), Custom_CutsceneDev_SceneObject);
+    Custom_AgentSetProperty("agent_demo_scene_qte",  "Runtime: Visible", false, kScene)
+
+
 
     controller_amb = SoundPlay("S3_AMB_Richmond_Alley_Dusk");
     ControllerSetLooping(controller_amb, true);
