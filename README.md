@@ -3,7 +3,9 @@ A tool to make custom cutscenes in TWDTTDS. Made with [Script Editor + Tweaks v3
 
 This mod is a tool made to allow easy creation of custom cutscenes within Telltale's game engine. This tool only works with The Walking Dead: The Telltale Definitive Series. It does not work in other games. You need to own a valid copy of The Walking Dead: The Telltale Definitive Series (TWDTTDS) in order to use this tool.
 
-Watch Demo Scene here:
+Watch the **Demo Scene** here: https://www.youtube.com/watch?v=IziPrB2wIag
+
+The **Demo Scene** was created using in-game assets to showcase the capabilities of this tool.
 
 This tool uses custom .ini formats, as well as .lua scripts, to save and load your work. Therefore, this tool cannot be used to modify any existing cutscenes made by Telltale, which use their own internal formats. You can only create new cutscenes using Telltale's resources, not edit any existing Telltale cutscenes.
 
