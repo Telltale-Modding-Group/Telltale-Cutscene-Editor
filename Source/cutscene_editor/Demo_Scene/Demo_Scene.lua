@@ -253,7 +253,7 @@ DemoScene = function()
     
     --CutsceneEditor("demo_cutscene","sk61_tripp.prop");
     CutscenePlayer("demo_cutscene", 0, 1, 1);
-    --CutscenePlayer("demo_cutscene", 63, 0, 1);
+    --CutscenePlayer("demo_cutscene", 3, 0, 1);
 
 
 end
