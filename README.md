@@ -11,7 +11,7 @@ This tool uses custom .ini formats, as well as .lua scripts, to save and load yo
 
 This tool is meant to be used by advanced users - users who know their way around computer, know the difference between files and folders and can understand basic computer-related terminology (and can look terms up if they are unfamiliar with them). Creation of simple cutscenes does not require coding knowledge beyond following the steps of scene setup. More complex features will require writing some new, more complex code, though nothing too difficult. In general, knowledge of the basics of coding will make understanding of this tool much easier, though it is not required. Telltale scripts are written in lua, so if you have knowledge of that language specifically, it's also a plus.
 
-Support for this tool is done through Discord. Please join the Telltale Modding Server (https://discord.gg/HqpnTenqwp), go through the verification process, then open the Cutscene Editor thread in the Mods section, write down and post a detailed report about your problem or question, and ping Mawrak alongside it.
+Support for this tool is done through Discord. Please join the Telltale Modding Server (https://discord.gg/HqpnTenqwp), go through the verification process, then open the Cutscene Editor thread in the Mods section, write down and post a detailed report about your problem or question, and ping **Mawrak** alongside it.
 
 ## Usage
 
